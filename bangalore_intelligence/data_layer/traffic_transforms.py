@@ -68,8 +68,61 @@ def get_incident_congestion_bands(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def compute_traffic_command_kpis(df: pd.DataFrame) -> list[dict]:
-    """Build KPI card configs from filtered traffic data."""
+TRAFFIC_KPI_NOTES: dict[str, str] = {
+    "System Congestion Index": "Mean congestion (%) across all records in the active filter scope.",
+    "Capacity Saturation Rate": "Share of records at or above 99.5% road capacity utilization.",
+    "Active Incidents": "Sum of incident reports in the filtered scope (aggregated daily where applicable).",
+    "Average Speed": "Mean observed speed (km/h) across filtered records.",
+    "Pedestrian Exposure": "Mean pedestrian and cyclist count per record.",
+    "Public Transport Usage": "Mean public transport usage (%) per record.",
+    "Signal Compliance": "Mean traffic signal compliance (%) per record.",
+    "Environmental Impact": "Mean derived environmental impact score per record.",
+    "Peak Month Congestion": "Highest monthly mean congestion in the filtered period.",
+    "Lowest Month": "Lowest monthly mean congestion in the filtered period.",
+    "Trend Direction": "Difference between recent vs earlier monthly mean congestion (heuristic).",
+    "Volatility Index": "Coefficient of variation of monthly mean congestion (%).",
+    "Critical Overload Roads": "Roads with mean congestion at or above 90%.",
+    "Focus Area": "Area with highest mean congestion in scope.",
+    "Worst Area": "Area with highest mean congestion in scope.",
+    "Baseline Roads": "Roads with mean congestion below 60%.",
+    "Mean Road Congestion": "Average mean congestion across roads in scope.",
+    "Selected Road": "Road highlighted by chart-linked focus.",
+    "Congestion": "Mean congestion for the chart-linked road.",
+    "Capacity": "Mean capacity utilization for the chart-linked road.",
+    "Area": "Area associated with the chart-linked road.",
+    "Speed < 30 km/h Share": "Percentage of records with speed below 30 km/h.",
+    "Congestion ≥ 75 Share": "Percentage of records with congestion at or above 75%.",
+    "Mean Speed": "Mean speed (km/h) across filtered records.",
+    "Threshold Crossings": "Count of records with congestion at or above 90%.",
+    "Roads Profiled": "Distinct road identifiers in the filtered scope.",
+    "High-Skew Roads": "Roads with mean congestion at or above 85%.",
+    "Mean Congestion": "Mean congestion (%) across filtered records.",
+    "Weather Regimes": "Distinct weather condition categories present.",
+    "Areas Profiled": "Distinct areas in the analytical workspace scope.",
+    "Radar Overlays": "Maximum simultaneous area traces on the stress radar chart.",
+    "Lab Mode": "Indicates analytical workspace (inherits global filters).",
+    "Records": "Row count after global filters in the workspace.",
+}
+
+
+def _attach_kpi_notes(kpis: list[dict]) -> list[dict]:
+    enriched: list[dict] = []
+    for item in kpis:
+        row = dict(item)
+        label = row.get("label", "")
+        if label in TRAFFIC_KPI_NOTES and not row.get("note"):
+            row["note"] = TRAFFIC_KPI_NOTES[label]
+        enriched.append(row)
+    return enriched
+
+
+def get_traffic_kpi_methodology_catalog() -> list[dict[str, str]]:
+    """Ordered KPI definitions for disclosure UI."""
+    return [{"label": label, "definition": text} for label, text in TRAFFIC_KPI_NOTES.items()]
+
+
+def compute_traffic_command_kpis(df: pd.DataFrame) -> tuple[list[dict], list[dict]]:
+    """Build KPI card configs from filtered traffic data (values computed from df only)."""
     if df.empty:
         return []
 
@@ -152,17 +205,75 @@ def compute_traffic_command_kpis(df: pd.DataFrame) -> list[dict]:
             "severity": "warning" if df["environmental_impact"].mean() > 140 else "neutral",
         },
     ]
-    return primary, secondary
+    return _attach_kpi_notes(primary), _attach_kpi_notes(secondary)
 
 
 def format_record_count(n: int) -> str:
     return f"n = {n:,} records"
 
 
+PARALLEL_AREA_DIMENSIONS: list[tuple[str, str]] = [
+    ("mean_congestion", "Congestion"),
+    ("mean_speed", "Speed"),
+    ("total_incidents", "Incidents"),
+    ("mean_capacity", "Capacity"),
+    ("mean_pedestrian", "Pedestrian"),
+    ("mean_pt_usage", "PT Usage"),
+    ("mean_signal", "Signal"),
+    ("record_count", "Volume"),
+]
+
+PARALLEL_RECORD_COLUMNS: list[tuple[str, str]] = [
+    (COL_CONGESTION, "Congestion"),
+    (COL_SPEED, "Speed"),
+    (COL_INCIDENTS, "Incidents"),
+    (COL_CAPACITY, "Capacity"),
+    (COL_PEDESTRIAN, "Pedestrian"),
+    (COL_PT_USAGE, "PT Usage"),
+    (COL_SIGNAL, "Signal"),
+    (COL_TRAFFIC_VOL, "Traffic Vol"),
+]
+
+AREA_STRESS_HEATMAP_METRICS: list[tuple[str, str, bool]] = [
+    ("mean_congestion", "Congestion", True),
+    ("mean_speed", "Speed", False),
+    ("mean_capacity", "Capacity", True),
+    ("total_incidents", "Incidents", True),
+    ("mean_pedestrian", "Pedestrian", True),
+    ("mean_signal", "Signal Compliance", False),
+]
+
+
 @st.cache_data(show_spinner=False)
 def get_parallel_coords_data(df: pd.DataFrame) -> pd.DataFrame:
-    """Area-level multivariate summary for T-02."""
-    return get_area_summary(df)
+    """Area-level eight-axis summary for T-02."""
+    base = get_area_summary(df)
+    if base.empty:
+        return base
+    cols = [c for c, _ in PARALLEL_AREA_DIMENSIONS if c in base.columns]
+    return base[[COL_AREA] + cols]
+
+
+@st.cache_data(show_spinner=False)
+def get_parallel_coords_records(df: pd.DataFrame, max_points: int = 3000) -> pd.DataFrame:
+    """Sampled record-level multivariate rows for T-02 fullscreen / dense mode."""
+    if df.empty:
+        return pd.DataFrame()
+    cols = [c for c, _ in PARALLEL_RECORD_COLUMNS if c in df.columns]
+    out = df[[COL_AREA] + cols].dropna()
+    source_rows = len(out)
+    sampled = False
+    if len(out) > max_points:
+        out = out.sample(max_points, random_state=42)
+        sampled = True
+    out = out.reset_index(drop=True)
+    out.attrs["sampling"] = {
+        "sampled": sampled,
+        "method": "pandas.sample(random_state=42)",
+        "sample_size": int(len(out)),
+        "source_rows": int(source_rows),
+    }
+    return out
 
 
 @st.cache_data(show_spinner=False)
@@ -266,16 +377,18 @@ def compute_traffic_temporal_kpis(df: pd.DataFrame) -> list[dict]:
     low = by_month.min()
     trend = by_month.iloc[-6:].mean() - by_month.iloc[:6].mean() if len(by_month) >= 12 else 0
     vol = by_month.std() / by_month.mean() * 100 if by_month.mean() else 0
-    return [
-        {"label": "Peak Month Congestion", "value": f"{peak:.1f}", "severity": "critical"},
-        {"label": "Lowest Month", "value": f"{low:.1f}", "severity": "safe"},
-        {
-            "label": "Trend Direction",
-            "value": "▲ Rising" if trend > 2 else ("▼ Easing" if trend < -2 else "→ Stable"),
-            "severity": "warning" if trend > 2 else "neutral",
-        },
-        {"label": "Volatility Index", "value": f"{vol:.1f}%", "severity": "neutral"},
-    ]
+    return _attach_kpi_notes(
+        [
+            {"label": "Peak Month Congestion", "value": f"{peak:.1f}", "severity": "critical"},
+            {"label": "Lowest Month", "value": f"{low:.1f}", "severity": "safe"},
+            {
+                "label": "Trend Direction",
+                "value": "▲ Rising" if trend > 2 else ("▼ Easing" if trend < -2 else "→ Stable"),
+                "severity": "warning" if trend > 2 else "neutral",
+            },
+            {"label": "Volatility Index", "value": f"{vol:.1f}%", "severity": "neutral"},
+        ]
+    )
 
 
 def compute_traffic_spatial_kpis(
@@ -290,23 +403,27 @@ def compute_traffic_spatial_kpis(
         row = stats[stats[COL_ROAD] == focus_road]
         if not row.empty:
             r = row.iloc[0]
-            return [
-                {"label": "Investigation", "value": focus_road, "severity": "warning", "filtered": True},
-                {"label": "Congestion", "value": f"{r['mean_congestion']:.1f}", "severity": "critical"},
-                {"label": "Capacity", "value": f"{r['mean_capacity']:.1f}%", "severity": "warning"},
-                {"label": "Area", "value": str(r[COL_AREA]), "severity": "neutral"},
-            ]
+            return _attach_kpi_notes(
+                [
+                    {"label": "Selected Road", "value": focus_road, "severity": "warning", "filtered": True},
+                    {"label": "Congestion", "value": f"{r['mean_congestion']:.1f}", "severity": "critical"},
+                    {"label": "Capacity", "value": f"{r['mean_capacity']:.1f}%", "severity": "warning"},
+                    {"label": "Area", "value": str(r[COL_AREA]), "severity": "neutral"},
+                ]
+            )
     view = df[df[COL_AREA] == focus_area] if focus_area else df
     road = view.groupby(COL_ROAD)[COL_CONGESTION].mean()
     critical = int((road >= 90).sum())
     baseline = int((road < 60).sum())
     worst_area = view.groupby(COL_AREA)[COL_CONGESTION].mean().idxmax() if not focus_area else focus_area
-    return [
-        {"label": "Critical Overload Roads", "value": str(critical), "severity": "critical"},
-        {"label": "Focus Area" if focus_area else "Worst Area", "value": str(worst_area), "severity": "critical"},
-        {"label": "Baseline Roads", "value": str(baseline), "severity": "safe"},
-        {"label": "Mean Road Congestion", "value": f"{road.mean():.1f}", "severity": "warning"},
-    ]
+    return _attach_kpi_notes(
+        [
+            {"label": "Critical Overload Roads", "value": str(critical), "severity": "critical"},
+            {"label": "Focus Area" if focus_area else "Worst Area", "value": str(worst_area), "severity": "critical"},
+            {"label": "Baseline Roads", "value": str(baseline), "severity": "safe"},
+            {"label": "Mean Road Congestion", "value": f"{road.mean():.1f}", "severity": "warning"},
+        ]
+    )
 
 
 def _normalize_series_to_stress(series: pd.Series, higher_is_worse: bool = True) -> pd.Series:
@@ -420,9 +537,19 @@ def get_congestion_speed_scatter(df: pd.DataFrame, max_points: int = 2500) -> pd
         return pd.DataFrame()
     cols = [COL_AREA, COL_ROAD, COL_CONGESTION, COL_SPEED, COL_INCIDENTS]
     out = df[cols].dropna()
+    source_rows = len(out)
+    sampled = False
     if len(out) > max_points:
         out = out.sample(max_points, random_state=42)
-    return out.reset_index(drop=True)
+        sampled = True
+    out = out.reset_index(drop=True)
+    out.attrs["sampling"] = {
+        "sampled": sampled,
+        "method": "pandas.sample(random_state=42)",
+        "sample_size": int(len(out)),
+        "source_rows": int(source_rows),
+    }
+    return out
 
 
 @st.cache_data(show_spinner=False)
@@ -450,8 +577,71 @@ def get_pt_quartile_summary(df: pd.DataFrame) -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner=False)
+def get_road_distribution_profiles(df: pd.DataFrame) -> pd.DataFrame:
+    """Per-road distribution stats for T-11 small-multiple grid (max 16 roads)."""
+    long = get_road_congestion_distributions(df)
+    if long.empty:
+        return pd.DataFrame()
+    rows: list[dict] = []
+    for road, grp in long.groupby(COL_ROAD):
+        vals = grp["value"].astype(float).values
+        rows.append(
+            {
+                COL_ROAD: road,
+                COL_AREA: str(grp[COL_AREA].iloc[0]),
+                "values": vals,
+                "median": float(np.median(vals)),
+                "q25": float(np.percentile(vals, 25)),
+                "q75": float(np.percentile(vals, 75)),
+                "std": float(np.std(vals)),
+            }
+        )
+    profiles = pd.DataFrame(rows).sort_values("median", ascending=False).head(16)
+    profiles["rank"] = range(1, len(profiles) + 1)
+    return profiles
+
+
+@st.cache_data(show_spinner=False)
+def get_area_stress_heatmap(df: pd.DataFrame) -> dict:
+    """Area × metric stress matrix for T-13 heatmap (z-score normalized 0–100)."""
+    base = get_area_summary(df)
+    if base.empty:
+        return {}
+    base = base.sort_values("mean_congestion", ascending=False)
+    areas = base[COL_AREA].tolist()
+    metric_labels = [label for _, label, _ in AREA_STRESS_HEATMAP_METRICS]
+    z_rows: list[list[float]] = []
+    text_rows: list[list[str]] = []
+    for area in areas:
+        row = base.loc[base[COL_AREA] == area].iloc[0]
+        z_row: list[float] = []
+        text_row: list[str] = []
+        for col, label, higher_worse in AREA_STRESS_HEATMAP_METRICS:
+            series = base.set_index(COL_AREA)[col]
+            stress = _normalize_series_to_stress(series, higher_is_worse=higher_worse)
+            z_row.append(float(stress.loc[area]))
+            raw = float(row[col])
+            if col == "mean_speed":
+                text_row.append(f"{raw:.1f} km/h")
+            elif col == "total_incidents":
+                text_row.append(f"{raw:.0f}")
+            elif col in ("mean_capacity", "mean_signal"):
+                text_row.append(f"{raw:.1f}%")
+            else:
+                text_row.append(f"{raw:.1f}")
+        z_rows.append(z_row)
+        text_rows.append(text_row)
+    return {
+        "areas": areas,
+        "metrics": metric_labels,
+        "z": z_rows,
+        "text": text_rows,
+    }
+
+
+@st.cache_data(show_spinner=False)
 def get_road_congestion_distributions(df: pd.DataFrame) -> pd.DataFrame:
-    """Long-format road congestion values for T-11 ridgeline."""
+    """Long-format road congestion values for T-11 (legacy / hover)."""
     if df.empty:
         return pd.DataFrame()
     roads = (
@@ -509,9 +699,19 @@ def get_traffic_volume_congestion(df: pd.DataFrame, max_points: int = 3000) -> p
     if df.empty:
         return pd.DataFrame()
     out = df[[COL_TRAFFIC_VOL, COL_CONGESTION, COL_AREA]].dropna()
+    source_rows = len(out)
+    sampled = False
     if len(out) > max_points:
         out = out.sample(max_points, random_state=42)
-    return out.reset_index(drop=True)
+        sampled = True
+    out = out.reset_index(drop=True)
+    out.attrs["sampling"] = {
+        "sampled": sampled,
+        "method": "pandas.sample(random_state=42)",
+        "sample_size": int(len(out)),
+        "source_rows": int(source_rows),
+    }
+    return out
 
 
 RADAR_METRIC_SPECS = [
@@ -550,12 +750,14 @@ def compute_traffic_threshold_kpis(df: pd.DataFrame) -> list[dict]:
         return []
     below_30 = (df[COL_SPEED] < 30).mean() * 100
     above_75 = (df[COL_CONGESTION] >= 75).mean() * 100
-    return [
-        {"label": "Speed < 30 km/h Share", "value": f"{below_30:.1f}%", "severity": "critical"},
-        {"label": "Congestion ≥ 75 Share", "value": f"{above_75:.1f}%", "severity": "warning"},
-        {"label": "Mean Speed", "value": f"{df[COL_SPEED].mean():.1f} km/h", "severity": "warning"},
-        {"label": "Threshold Crossings", "value": f"{int((df[COL_CONGESTION] >= 90).sum()):,}", "severity": "critical"},
-    ]
+    return _attach_kpi_notes(
+        [
+            {"label": "Speed < 30 km/h Share", "value": f"{below_30:.1f}%", "severity": "critical"},
+            {"label": "Congestion ≥ 75 Share", "value": f"{above_75:.1f}%", "severity": "warning"},
+            {"label": "Mean Speed", "value": f"{df[COL_SPEED].mean():.1f} km/h", "severity": "warning"},
+            {"label": "Threshold Crossings", "value": f"{int((df[COL_CONGESTION] >= 90).sum()):,}", "severity": "critical"},
+        ]
+    )
 
 
 def compute_traffic_patterns_kpis(df: pd.DataFrame) -> list[dict]:
@@ -563,9 +765,11 @@ def compute_traffic_patterns_kpis(df: pd.DataFrame) -> list[dict]:
         return []
     roads = df[COL_ROAD].nunique()
     skew_roads = int((df.groupby(COL_ROAD)[COL_CONGESTION].mean() >= 85).sum())
-    return [
-        {"label": "Roads Profiled", "value": str(roads), "severity": "neutral"},
-        {"label": "High-Skew Roads", "value": str(skew_roads), "severity": "critical"},
-        {"label": "Mean Congestion", "value": f"{df[COL_CONGESTION].mean():.1f}", "severity": "warning"},
-        {"label": "Weather Regimes", "value": str(df[COL_WEATHER].nunique()), "severity": "neutral"},
-    ]
+    return _attach_kpi_notes(
+        [
+            {"label": "Roads Profiled", "value": str(roads), "severity": "neutral"},
+            {"label": "High-Skew Roads", "value": str(skew_roads), "severity": "critical"},
+            {"label": "Mean Congestion", "value": f"{df[COL_CONGESTION].mean():.1f}", "severity": "warning"},
+            {"label": "Weather Regimes", "value": str(df[COL_WEATHER].nunique()), "severity": "neutral"},
+        ]
+    )

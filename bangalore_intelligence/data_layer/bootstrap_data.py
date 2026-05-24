@@ -1,15 +1,17 @@
-"""Generate canonical synthetic datasets when raw files are absent."""
+"""Generate synthetic CSV bootstrap data when raw files are absent (dev/CI fallback only).
 
-from datetime import datetime, timedelta
-from pathlib import Path
+Dashboards prefer governed parquet from `import_real_data.py --apply`. See MD-File/REAL_DATA_OPERATION.md.
+"""
+
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
 
 from config.data_config import (
+    ALLOW_DEV_SYNTHETIC_BOOTSTRAP,
     AQI_RAW_PATH,
     COL_AREA,
-    COL_AQI_CATEGORY,
     COL_CAPACITY,
     COL_CONGESTION,
     COL_DATE,
@@ -34,6 +36,7 @@ from config.data_config import (
     TRAFFIC_AREAS,
     TRAFFIC_RAW_PATH,
 )
+from data_layer.governance import SyntheticDataDetectedError, is_production_runtime
 
 
 def _pm25_to_category(pm25: float) -> str:
@@ -115,7 +118,12 @@ def generate_aqi_raw(n_days: int = 1095) -> pd.DataFrame:
 
 
 def ensure_raw_datasets() -> None:
-    """Write raw CSV files if missing or empty."""
+    """Write raw CSV files if explicitly allowed for development bootstrap."""
+    if is_production_runtime() or not ALLOW_DEV_SYNTHETIC_BOOTSTRAP:
+        raise SyntheticDataDetectedError(
+            "Synthetic raw dataset bootstrap is disabled by Phase 0 governance. "
+            "Use governed canonical parquet produced by scripts/import_real_data.py --apply."
+        )
     TRAFFIC_RAW_PATH.parent.mkdir(parents=True, exist_ok=True)
     if not TRAFFIC_RAW_PATH.exists() or TRAFFIC_RAW_PATH.stat().st_size < 10:
         generate_traffic_raw().to_csv(TRAFFIC_RAW_PATH, index=False)

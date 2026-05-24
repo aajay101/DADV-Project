@@ -1,6 +1,5 @@
 """Shared Plotly element builders."""
 
-import plotly.graph_objects as go
 
 from config.theme import get_dashboard_tokens
 
@@ -9,13 +8,15 @@ def add_threshold_line(fig, y, label, color, dashboard="traffic"):
     fig.add_hline(y=y, line_dash="dash", line_color=color, opacity=0.7)
     tokens = get_dashboard_tokens(dashboard)
     fig.add_annotation(
-        x=1,
+        x=1.01,
         xref="paper",
         y=y,
+        yref="y",
         text=label,
         showarrow=False,
         font=dict(size=10, color=tokens["text_muted"]),
-        xanchor="right",
+        xanchor="left",
+        yanchor="middle",
     )
     return fig
 
@@ -34,25 +35,30 @@ def add_quadrant_zone_labels(
     y_mid: float,
     dashboard: str = "traffic",
 ):
-    """Permanent quadrant archetype labels for operational scatter charts."""
+    """Quadrant archetype labels in paper margin — kept outside the plot area."""
+    del x_mid, y_mid  # paper-anchored layout; mids unused but kept for call-site stability
     from config.theme import TRAFFIC_AMBER, TRAFFIC_CRIMSON, TRAFFIC_TEAL
 
     tokens = get_dashboard_tokens(dashboard)
     muted = tokens["text_muted"]
     labels = [
-        (x_mid * 0.45, y_mid * 1.35, "CONSTRAINED FLOW", TRAFFIC_AMBER),
-        (x_mid * 1.55, y_mid * 1.35, "CRITICAL OVERLOAD", TRAFFIC_CRIMSON),
-        (x_mid * 0.45, y_mid * 0.55, "OPERATIONAL BASELINE", muted),
-        (x_mid * 1.55, y_mid * 0.55, "CAPACITY MARGIN", TRAFFIC_TEAL),
+        (0.06, 0.96, "CONSTRAINED FLOW", TRAFFIC_AMBER, "left", "top"),
+        (0.94, 0.96, "CRITICAL OVERLOAD", TRAFFIC_CRIMSON, "right", "top"),
+        (0.06, 0.06, "OPERATIONAL BASELINE", muted, "left", "bottom"),
+        (0.94, 0.06, "CAPACITY MARGIN", TRAFFIC_TEAL, "right", "bottom"),
     ]
-    for x, y, text, color in labels:
+    for x, y, text, color, xanchor, yanchor in labels:
         fig.add_annotation(
             x=x,
             y=y,
+            xref="paper",
+            yref="paper",
             text=text,
             showarrow=False,
             font=dict(size=10, color=color),
-            opacity=0.75,
+            opacity=0.85,
+            xanchor=xanchor,
+            yanchor=yanchor,
         )
     return fig
 

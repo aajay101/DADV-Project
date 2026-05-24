@@ -23,3 +23,6 @@ Thumbs.db
 # Data artifacts
 data/processed/
 data/aggregations/
+data/.import_temp/
+data/metadata/
+data/archive/

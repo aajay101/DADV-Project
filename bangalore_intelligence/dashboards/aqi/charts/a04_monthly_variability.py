@@ -2,6 +2,7 @@
 
 import plotly.graph_objects as go
 
+from utils.formatters import hover_template, hover_z_pm25
 from utils.plotly_engine import AQI_CATEGORY_COLORS, apply_dashboard_theme, empty_figure
 
 
@@ -50,7 +51,7 @@ def render(data, config=None):
                 [0.8, AQI_CATEGORY_COLORS["Very Poor"]],
                 [1, AQI_CATEGORY_COLORS["Severe"]],
             ],
-            hovertemplate="%{y} · %{x}<br>Mean PM2.5 %{z:.1f} µg/m³<extra></extra>",
+            hovertemplate=hover_template("%{y} · %{x}", hover_z_pm25()),
             showscale=True,
             colorbar=dict(title="PM2.5", thickness=12, len=0.6),
         )
@@ -59,6 +60,5 @@ def render(data, config=None):
         xaxis_title="Month",
         yaxis_title="Year",
         margin=dict(l=56, r=80, t=16, b=48),
-        height=cfg.get("height"),
     )
     return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "supporting"), show_legend=False)

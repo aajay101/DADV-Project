@@ -2,7 +2,7 @@
 
 from config.typography import TYPE_ALERT, TYPE_CAPTION, css_from_type
 from config.theme import RADIUS_LG, SPACING_MD, get_dashboard_tokens
-from utils.html_styles import join_styles, left_accent_bar, pill_badge
+from utils.html_styles import join_styles, left_accent_bar, pill_badge, styled_p
 from utils.ui_blocks import render_html_block
 
 
@@ -22,14 +22,18 @@ def lab_header(dashboard: str = "traffic") -> None:
         "flex-wrap:wrap",
         f"gap:{SPACING_MD}px",
     )
-
-    html = f"""
-    <div style="{container_style}">
-        <span style="{title_style}">⚗ ADVANCED ANALYTICS LABORATORY · ACTIVE</span>
-        {pill_badge('HIGH DENSITY', tokens['surface_3'], tokens['accent_secondary'], tokens['border'])}
-    </div>
-    <p style="{caption_style}">
-        Breadcrumb: Overview → Lab · Fullscreen modules available in Phase 5
-    </p>
-    """
+    badge = pill_badge(
+        "HIGH DENSITY",
+        tokens["surface_3"],
+        tokens["accent_secondary"],
+        tokens["border"],
+    )
+    html = (
+        f'<div style="{container_style}">'
+        f'<span style="{title_style}">⚗ ADVANCED ANALYTICS LABORATORY · ACTIVE</span>{badge}</div>'
+        + styled_p(
+            "Breadcrumb: Overview → Lab · Use ⤢ on eligible charts for fullscreen inspection",
+            caption_style,
+        )
+    )
     render_html_block(html)

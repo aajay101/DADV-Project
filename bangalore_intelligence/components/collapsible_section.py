@@ -4,10 +4,11 @@ from collections.abc import Callable
 
 import streamlit as st
 
+from config.spacing import EXPANDER_CONTENT_GAP
 from config.typography import TYPE_SUBSECTION_TITLE, css_from_type
 from config.theme import get_dashboard_tokens
 from utils.html_styles import join_styles, styled_p
-from utils.ui_blocks import render_html_block
+from utils.ui_blocks import render_html_block, render_spacer
 
 
 def collapsible_section(
@@ -23,8 +24,12 @@ def collapsible_section(
         "font-weight:400",
         "text-transform:none",
         "opacity:0.8",
+        "line-height:1.5",
     )
     with st.expander(label, expanded=default_expanded):
-        render_html_block(styled_p(f"Deferred render slot · {key}", hint_style))
+        render_spacer(EXPANDER_CONTENT_GAP // 2)
         if content_fn is not None:
             content_fn()
+        else:
+            render_html_block(styled_p(f"Deferred render slot · {key}", hint_style))
+        render_spacer(EXPANDER_CONTENT_GAP // 2)

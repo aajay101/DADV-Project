@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from config.data_config import COL_AREA, COL_ROAD
+import streamlit as st
+
+from config.data_config import COL_AREA, COL_ROAD, TRAFFIC_AREAS
 from filters.interaction import (
     apply_interaction_payload,
     clear_investigation,
@@ -44,9 +46,33 @@ def _quadrant_from_xy(x: float, y: float, x_mid: float = 75.0, y_mid: float = 75
     return "baseline"
 
 
+def _area_from_point(point: dict) -> str | None:
+    label = _point_label(point)
+    if label and label in TRAFFIC_AREAS:
+        return label
+    y = point.get("y")
+    if isinstance(y, str) and y in TRAFFIC_AREAS:
+        return y
+    return None
+
+
+def _toggle_same_traffic_area(area: str) -> bool:
+    state = read_interaction_state("traffic")
+    return (
+        state.get("selected_area") == area
+        and not state.get("selected_road")
+        and not state.get("selected_month")
+    )
+
+
 def _toggle_same_traffic_road(road: str) -> bool:
     state = read_interaction_state("traffic")
     return state.get("selected_road") == road
+
+
+def _toggle_same_area_month(area: str, month: str) -> bool:
+    state = read_interaction_state("traffic")
+    return state.get("selected_area") == area and state.get("selected_month") == month
 
 
 def _toggle_same_aqi_day(year: int, week: int) -> bool:
@@ -54,12 +80,35 @@ def _toggle_same_aqi_day(year: int, week: int) -> bool:
     return state.get("selected_year") == year and state.get("selected_week") == week
 
 
+def handle_t01(point: dict, meta: ChartMeta) -> dict:
+    area = _area_from_point(point)
+    if not area:
+        return {}
+    if _toggle_same_traffic_area(area):
+        clear_investigation("traffic")
+        return {"cleared": True}
+    return {
+        "chart": "T-01",
+        "selected_area": area,
+        "selected_road": None,
+        "selected_month": None,
+        "focus_mode": "area_ranking",
+    }
+
+
 def handle_t05(point: dict, meta: ChartMeta) -> dict:
-    road = _point_label(point) or meta.get("roads_by_index", {}).get(point.get("point_index"))
+    road = (
+        point.get("text")
+        or _point_label(point)
+        or meta.get("roads_by_index", {}).get(point.get("point_index"))
+    )
     if not road:
         return {}
-    x = float(point.get("x", 0))
-    y = float(point.get("y", 0))
+    try:
+        x = float(point.get("x", 0))
+        y = float(point.get("y", 0))
+    except (TypeError, ValueError):
+        x, y = 75.0, 75.0
     area = None
     custom = point.get("customdata")
     if isinstance(custom, (list, tuple)) and custom:
@@ -76,6 +125,7 @@ def handle_t05(point: dict, meta: ChartMeta) -> dict:
         "chart": "T-05",
         "selected_road": road,
         "selected_area": area,
+        "selected_month": None,
         "selected_quadrant": _quadrant_from_xy(x, y),
         "focus_mode": "road_investigation",
     }
@@ -118,6 +168,20 @@ def handle_t07(point: dict, meta: ChartMeta) -> dict:
 
 
 def handle_t13(point: dict, meta: ChartMeta) -> dict:
+    area = point.get("y")
+    if isinstance(area, str) and area in TRAFFIC_AREAS:
+        state = read_interaction_state("traffic")
+        if state.get("selected_area") == area and not state.get("selected_road"):
+            clear_investigation("traffic")
+            return {"cleared": True}
+        return {
+            "chart": "T-13",
+            "selected_area": area,
+            "selected_road": None,
+            "focus_entity": area,
+            "focus_mode": "area_stress_heatmap",
+        }
+
     curve = point.get("curve_number", point.get("curveNumber"))
     areas = meta.get("radar_areas") or []
     if curve is None or curve >= len(areas):
@@ -132,6 +196,29 @@ def handle_t13(point: dict, meta: ChartMeta) -> dict:
         "selected_area": area,
         "focus_entity": area,
         "focus_mode": "radar_comparison",
+    }
+
+
+def handle_t15(point: dict, meta: ChartMeta) -> dict:
+    area = point.get("y")
+    month = point.get("x")
+    if isinstance(area, (int, float)):
+        area = None
+    if area is not None:
+        area = str(area)
+    if month is not None:
+        month = str(month)
+    if not area or area not in TRAFFIC_AREAS or not month:
+        return {}
+    if _toggle_same_area_month(area, month):
+        clear_investigation("traffic")
+        return {"cleared": True}
+    return {
+        "chart": "T-15",
+        "selected_area": area,
+        "selected_month": month,
+        "selected_road": None,
+        "focus_mode": "area_month",
     }
 
 
@@ -230,10 +317,12 @@ def handle_a15(point: dict, meta: ChartMeta) -> dict:
 
 
 HANDLERS = {
+    "T-01": handle_t01,
     "T-05": handle_t05,
     "T-06": handle_t06,
     "T-07": handle_t07,
     "T-13": handle_t13,
+    "T-15": handle_t15,
     "T-02": handle_t02,
     "A-02": handle_a02,
     "A-13": handle_a13,
@@ -262,5 +351,17 @@ def dispatch_chart_selection(
     if payload.pop("cleared", False):
         return True
     dashboard = "traffic" if chart_id.startswith("T-") else "aqi"
+    from filters.interaction_mode import get_interaction_mode
+
+    if get_interaction_mode(st.session_state, dashboard) == "global_filter_mode":
+        from filters.observability import RuntimeObservabilityManager
+
+        RuntimeObservabilityManager.emit(
+            "transition",
+            source="dispatch_chart_selection",
+            message="Investigation overlay activation blocked while global filters are active",
+            severity="warning",
+            payload={"dashboard": dashboard, "chart_id": chart_id},
+        )
     apply_interaction_payload(dashboard, payload)
     return True

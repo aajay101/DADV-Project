@@ -1,4 +1,4 @@
-"""p3_atmospheric_intelligence — A-06 hero · A-03 support."""
+"""Atmospheric Conditions — A-06 hero · A-07 support."""
 
 from components.page_runtime import render_page
 

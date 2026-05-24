@@ -1,0 +1,255 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "apply",
+  "success": true,
+  "import_timestamp": "2026-05-22T10:23:22Z",
+  "traffic": {
+    "dataset": "traffic",
+    "row_count": 8579,
+    "column_count": 13,
+    "columns": [
+      "Date",
+      "Area Name",
+      "Road Name",
+      "Congestion_Level",
+      "Average_Speed",
+      "Incident_Reports",
+      "Road_Capacity_Utilization",
+      "Pedestrian_and_Cyclist_Count",
+      "Public_Transport_Usage",
+      "Traffic_Signal_Compliance",
+      "Traffic_Volume",
+      "Weather_Condition",
+      "Roadwork_Activity"
+    ],
+    "date_min": "2022-01-01",
+    "date_max": "2024-08-17",
+    "has_Travel_Time_Index": false,
+    "has_Environmental_Impact": false,
+    "has_Parking_Usage": false
+  },
+  "aqi": {
+    "dataset": "aqi",
+    "row_count": 1095,
+    "column_count": 10,
+    "columns": [
+      "Date",
+      "PM_2_5",
+      "T",
+      "Tm",
+      "TM",
+      "SLP",
+      "H",
+      "VV",
+      "V",
+      "VM"
+    ],
+    "date_min": "2021-01-01",
+    "date_max": "2023-12-31",
+    "pm25_non_null": 1095
+  },
+  "aqi_preclean": {
+    "rows_read": 1095,
+    "blank_rows_dropped": 0,
+    "missing_pm25_dropped": 0
+  },
+  "traffic_duplicate_governance": {
+    "policy": "aggregate_daily_canonical",
+    "duplicate_key_columns": [
+      "Date",
+      "Area Name",
+      "Road Name"
+    ],
+    "rows_before": 8936,
+    "duplicate_key_rows_before": 696,
+    "duplicate_groups_before": 339,
+    "exact_duplicates_removed": 0,
+    "partial_groups_aggregated": 339,
+    "rows_collapsed_by_aggregation": 357,
+    "rows_after": 8579
+  },
+  "traffic_source_path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\raw\\traffic_raw.csv",
+  "aqi_source_path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\raw\\aqi_raw.csv",
+  "source_metadata": {
+    "traffic": {
+      "path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\raw\\traffic_raw.csv",
+      "size_bytes": 702141,
+      "sha256": "554d6a6380a8f96fe651ea44edc606c88b7b2d041da5621bd3ef4a7dbfdf264d"
+    },
+    "aqi": {
+      "path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\raw\\aqi_raw.csv",
+      "size_bytes": 63896,
+      "sha256": "e480ae4a6b41ef08539b7c38bc9ad0057a1247c359a74ba58665ebea8010c2e9"
+    }
+  },
+  "raw_validation": {
+    "traffic": {
+      "dataset": "traffic",
+      "findings": [],
+      "severity_counts": {
+        "INFO": 0,
+        "WARNING": 0,
+        "ERROR": 0,
+        "CRITICAL": 0
+      },
+      "duplicate_count": 0,
+      "null_stats": {
+        "null_counts": {
+          "Date": 0,
+          "Area Name": 0,
+          "Road Name": 0,
+          "Congestion_Level": 0,
+          "Average_Speed": 0,
+          "Incident_Reports": 0,
+          "Road_Capacity_Utilization": 0,
+          "Pedestrian_and_Cyclist_Count": 0,
+          "Public_Transport_Usage": 0,
+          "Traffic_Signal_Compliance": 0,
+          "Traffic_Volume": 0,
+          "Weather_Condition": 0,
+          "Roadwork_Activity": 2789
+        },
+        "incident_policy": {
+          "incident_null_count": 0,
+          "incident_null_ratio": 0.0,
+          "incident_fill_allowed": true
+        }
+      },
+      "source_metadata": {
+        "path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\raw\\traffic_raw.csv",
+        "size_bytes": 702141,
+        "sha256": "554d6a6380a8f96fe651ea44edc606c88b7b2d041da5621bd3ef4a7dbfdf264d"
+      },
+      "has_blocking_findings": false
+    },
+    "aqi": {
+      "dataset": "aqi",
+      "findings": [],
+      "severity_counts": {
+        "INFO": 0,
+        "WARNING": 0,
+        "ERROR": 0,
+        "CRITICAL": 0
+      },
+      "duplicate_count": 0,
+      "null_stats": {
+        "null_counts": {
+          "Date": 0,
+          "PM_2_5": 0,
+          "T": 0,
+          "Tm": 0,
+          "TM": 0,
+          "SLP": 0,
+          "H": 0,
+          "VV": 0,
+          "V": 0,
+          "VM": 0
+        },
+        "pm25_interpolation": "forbidden"
+      },
+      "source_metadata": {
+        "path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\raw\\aqi_raw.csv",
+        "size_bytes": 63896,
+        "sha256": "e480ae4a6b41ef08539b7c38bc9ad0057a1247c359a74ba58665ebea8010c2e9"
+      },
+      "has_blocking_findings": false
+    },
+    "severity_totals": {
+      "INFO": 0,
+      "WARNING": 0,
+      "ERROR": 0,
+      "CRITICAL": 0
+    }
+  },
+  "processed_validation": {
+    "traffic": {
+      "dataset": "traffic",
+      "findings": [],
+      "severity_counts": {
+        "INFO": 0,
+        "WARNING": 0,
+        "ERROR": 0,
+        "CRITICAL": 0
+      },
+      "has_blocking_findings": false,
+      "ok": true
+    },
+    "aqi": {
+      "dataset": "aqi",
+      "findings": [],
+      "severity_counts": {
+        "INFO": 0,
+        "WARNING": 0,
+        "ERROR": 0,
+        "CRITICAL": 0
+      },
+      "has_blocking_findings": false,
+      "ok": true
+    },
+    "severity_totals": {
+      "INFO": 0,
+      "WARNING": 0,
+      "ERROR": 0,
+      "CRITICAL": 0
+    }
+  },
+  "timings": {
+    "normalization_time": 0.6575,
+    "validation_time": 0.0611,
+    "cleaning_time": 0.0444,
+    "parquet_write_time": 0.3368,
+    "total_import_time": 1.0688
+  },
+  "processed_metadata": {
+    "traffic": {
+      "row_count": 8579,
+      "derived_column_count": 4,
+      "parquet_size_bytes": 151660,
+      "generated_at": "2026-05-22T10:23:22Z"
+    },
+    "aqi": {
+      "row_count": 1095,
+      "derived_column_count": 10,
+      "parquet_size_bytes": 56528,
+      "generated_at": "2026-05-22T10:23:22Z"
+    }
+  },
+  "freshness_metadata": {
+    "traffic": {
+      "source_last_date": "2024-08-17",
+      "processed_last_date": "2024-08-17",
+      "days_since_latest_record": 643
+    },
+    "aqi": {
+      "source_last_date": "2023-12-31",
+      "processed_last_date": "2023-12-31",
+      "days_since_latest_record": 873
+    }
+  },
+  "governance": {
+    "lock": {
+      "pid": 15688,
+      "started_at": "2026-05-22T10:23:21Z",
+      "started_at_unix": 1779445401.0641346
+    },
+    "snapshots": {
+      "traffic_snapshot": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\archive\\traffic_raw_2026_05_22_102321.parquet",
+      "aqi_snapshot": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\archive\\aqi_raw_2026_05_22_102321.parquet",
+      "traffic_snapshots_removed": [
+        "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\archive\\traffic_raw_2026_05_21_163558.parquet"
+      ],
+      "aqi_snapshots_removed": [
+        "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\archive\\aqi_raw_2026_05_21_163558.parquet"
+      ]
+    },
+    "profile_path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\metadata\\import_profile.json",
+    "history_path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\metadata\\import_history\\import_2026_05_22_102321.json"
+  },
+  "artifacts_written": [
+    "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\raw\\traffic_canonical_raw.parquet",
+    "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\raw\\aqi_canonical_raw.parquet",
+    "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\processed\\traffic_clean.parquet",
+    "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\processed\\aqi_clean.parquet"
+  ],
+  "error": ""
+}

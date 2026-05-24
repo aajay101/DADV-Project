@@ -6,8 +6,8 @@ TYPE_HERO_TITLE = {
     "family": FONT_FAMILY,
     "size": "20px",
     "weight": "700",
-    "letter_spacing": "-0.02em",
-    "line_height": "1.25",
+    "letter_spacing": "0",
+    "line_height": "1.32",
     "transform": "none",
 }
 
@@ -33,7 +33,7 @@ TYPE_KPI_VALUE = {
     "family": FONT_MONO,
     "size": "32px",
     "weight": "700",
-    "letter_spacing": "-0.02em",
+    "letter_spacing": "0",
     "line_height": "1.1",
     "transform": "none",
 }
@@ -54,7 +54,7 @@ TYPE_KPI_LABEL = {
     "size": "12px",
     "weight": "600",
     "letter_spacing": "0.04em",
-    "line_height": "1.45",
+    "line_height": "1.5",
     "transform": "uppercase",
 }
 
@@ -94,8 +94,23 @@ TYPE_ALERT = {
     "transform": "none",
 }
 
-TYPE_CHART_HERO = TYPE_SECTION_TITLE
-TYPE_CHART_SUPPORT = TYPE_SUBSECTION_TITLE
+TYPE_CHART_HERO = {
+    "family": FONT_FAMILY,
+    "size": "16px",
+    "weight": "600",
+    "letter_spacing": "0",
+    "line_height": "1.4",
+    "transform": "none",
+}
+
+TYPE_CHART_SUPPORT = {
+    "family": FONT_FAMILY,
+    "size": "14px",
+    "weight": "500",
+    "letter_spacing": "0",
+    "line_height": "1.45",
+    "transform": "none",
+}
 
 
 def css_from_type(scale: dict, color: str, extra: str = "") -> str:

@@ -38,6 +38,7 @@ def _month_to_season(month: int) -> str:
 
 
 def clean_traffic(df: pd.DataFrame) -> pd.DataFrame:
+    """Derive traffic fields only; preserve Area Name and Road Name from governed intake."""
     out = df.copy()
     out[COL_DATE] = pd.to_datetime(out[COL_DATE])
     out["day_of_week"] = out[COL_DATE].dt.day_name()

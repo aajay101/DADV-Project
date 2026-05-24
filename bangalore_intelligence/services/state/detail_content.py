@@ -9,12 +9,10 @@ import pandas as pd
 from config.data_config import (
     COL_AQI_CATEGORY,
     COL_AREA,
-    COL_CONGESTION,
     COL_DATE,
     COL_PM25,
     COL_ROAD,
     COL_SEASON,
-    COL_SPEED,
 )
 from data_layer.traffic_transforms import get_road_stats
 from filters.interaction import quadrant_label, read_interaction_state
@@ -95,7 +93,7 @@ def build_aqi_day_detail(df: pd.DataFrame) -> dict[str, Any] | None:
         ],
         "notes": (
             f"Calendar investigation · week {state.get('selected_week')} {state.get('selected_year')}. "
-            f"{'Spike above Very Poor threshold — review stagnation and pressure drivers.' if pm25 > 120 else 'Moderate event — compare seasonal baseline in supporting charts.'}"
+            f"{'Spike above Very Poor threshold — review associated visibility and pressure conditions.' if pm25 > 120 else 'Moderate event — compare seasonal baseline in supporting charts.'}"
         ),
         "severity": "critical" if pm25 > 250 else ("warning" if pm25 > 120 else "neutral"),
     }

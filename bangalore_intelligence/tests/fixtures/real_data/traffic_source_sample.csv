@@ -1,0 +1,3 @@
+Date,Area Name,Road Name,Congestion Level,Average Speed,Incident Reports,Road Capacity Utilization,Pedestrian_and_Cyclist_Count,Public Transport Usage,Traffic Signal Compliance,Traffic Volume,Weather Condition,Roadwork Activity,Travel Time Index,Environmental Impact,Parking Usage
+2022-01-01,Indiranagar,Road_1,80.0,30.0,1,85.0,100,50.0,70.0,1000,Clear,None,1.2,90.0,40.0
+2022-01-02,Koramangala,Road_2,75.0,32.0,0,80.0,110,55.0,72.0,1100,Rain,Minor,1.1,88.0,42.0

@@ -3,6 +3,7 @@
 from typing import Literal
 
 DashboardId = Literal["traffic", "aqi"]
+AppearanceId = Literal["dark", "light"]
 
 # ── Traffic: operational urgency ─────────────────────────────────────────────
 TRAFFIC_BG = "#0D1117"
@@ -73,6 +74,7 @@ GAP_TIGHT = SPACING_SM
 GAP_DEFAULT = SPACING_MD
 GAP_SECTION = SPACING_LG
 GAP_ZONE = SPACING_XL
+GAP_PAGE_SECTION = 32
 
 # ── Border radius scale ──────────────────────────────────────────────────────
 RADIUS_SM = 4
@@ -106,8 +108,62 @@ def get_severity_colors(dashboard: DashboardId) -> dict[str, str]:
     }
 
 
-def get_dashboard_tokens(dashboard: DashboardId) -> dict:
-    """Full token bundle for a dashboard identity."""
+TRAFFIC_LIGHT = {
+    "dashboard": "traffic",
+    "bg": "#F4F6F8",
+    "surface": "#FFFFFF",
+    "surface_2": "#F0F2F5",
+    "surface_3": "#E8EBEF",
+    "surface_4": "#DEE3EA",
+    "border": "#CBD2D9",
+    "border_2": "#E5E7EB",
+    "border_hover": "#94A3B8",
+    "accent": "#C92A2A",
+    "accent_secondary": "#1D4ED8",
+    "accent_gradient_start": "#FFFFFF",
+    "accent_gradient_end": "#F4F6F8",
+    "severity_critical": "#B42318",
+    "severity_warning": "#B54708",
+    "severity_safe": "#0F766E",
+    "text_primary": "#111827",
+    "text_muted": "#4B5563",
+    "filter_shelf": "#FFFFFF",
+    "identity_label": "Traffic intelligence",
+    "platform_tagline": "Operational urban mobility analytics",
+    "lab_atmosphere": "#E8EBEF",
+}
+
+AQI_LIGHT = {
+    "dashboard": "aqi",
+    "bg": "#F8FAFC",
+    "surface": "#FFFFFF",
+    "surface_2": "#F1F5F9",
+    "surface_3": "#E2E8F0",
+    "surface_4": "#CBD5E1",
+    "border": "#CBD5E1",
+    "border_2": "#E2E8F0",
+    "border_hover": "#94A3B8",
+    "accent": "#0284C7",
+    "accent_secondary": "#059669",
+    "accent_gradient_start": "#FFFFFF",
+    "accent_gradient_end": "#F8FAFC",
+    "severity_critical": "#6E5A82",
+    "severity_warning": "#B07A45",
+    "severity_safe": "#3D7A5C",
+    "text_primary": "#0F172A",
+    "text_muted": "#475569",
+    "filter_shelf": "#FFFFFF",
+    "identity_label": "AQI environmental intelligence",
+    "platform_tagline": "Atmospheric environmental analytics",
+    "lab_atmosphere": "#E2E8F0",
+}
+
+
+def get_dashboard_tokens(dashboard: DashboardId, appearance: AppearanceId = "dark") -> dict:
+    """Full token bundle for a dashboard identity (dark default, optional light)."""
+    if appearance == "light":
+        base = TRAFFIC_LIGHT if dashboard == "traffic" else AQI_LIGHT
+        return dict(base)
     if dashboard == "aqi":
         return {
             "dashboard": "aqi",
@@ -129,8 +185,8 @@ def get_dashboard_tokens(dashboard: DashboardId) -> dict:
             "text_primary": AQI_TEXT_PRIMARY,
             "text_muted": AQI_TEXT_MUTED,
             "filter_shelf": AQI_SURFACE_3,
-            "identity_label": "AQI ENVIRONMENTAL INTELLIGENCE",
-            "platform_tagline": "Atmospheric · Scientific · Environmental Intelligence",
+            "identity_label": "AQI environmental intelligence",
+            "platform_tagline": "Atmospheric environmental analytics",
             "lab_atmosphere": AQI_NAVY,
         }
     return {
@@ -153,7 +209,7 @@ def get_dashboard_tokens(dashboard: DashboardId) -> dict:
         "text_primary": TRAFFIC_TEXT_PRIMARY,
         "text_muted": TRAFFIC_TEXT_MUTED,
         "filter_shelf": TRAFFIC_SURFACE_3,
-        "identity_label": "TRAFFIC INTELLIGENCE",
-        "platform_tagline": "Operational · High-Pressure · Urban Mobility Command",
+        "identity_label": "Traffic intelligence",
+        "platform_tagline": "Operational urban mobility analytics",
         "lab_atmosphere": TRAFFIC_SURFACE_2,
     }

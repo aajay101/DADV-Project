@@ -25,9 +25,9 @@ from config.data_config import (
 def get_aqi_summary_stats(df: pd.DataFrame) -> dict:
     if df.empty:
         return {}
-    chronic_mask = df[COL_PM25] > AQI_PM25_VERY_POOR
+    days_above_120_mask = df[COL_PM25] > AQI_PM25_VERY_POOR
     return {
-        "chronic_crisis_rate": chronic_mask.mean() * 100,
+        "days_above_120_rate": days_above_120_mask.mean() * 100,
         "peak_pm25": df[COL_PM25].max(),
         "annual_mean_pm25": df[COL_PM25].mean(),
         "severe_days": int((df[COL_PM25] > AQI_PM25_SEVERE).sum()),
@@ -53,17 +53,17 @@ def compute_aqi_crisis_kpis(df: pd.DataFrame) -> tuple[list[dict], list[dict]]:
 
     primary = [
         {
-            "label": "Chronic Crisis Rate",
-            "value": f"{stats['chronic_crisis_rate']:.1f}% of days",
+            "label": "Days Above 120 ug/m3",
+            "value": f"{stats['days_above_120_rate']:.1f}% of days",
             "severity": "critical",
         },
         {
-            "label": "Peak Pollution Index",
+            "label": "Peak PM2.5",
             "value": f"{stats['peak_pm25']:.1f} µg/m³",
             "severity": "critical",
         },
         {
-            "label": "Annual Mean PM2.5",
+            "label": "Mean PM2.5 in View",
             "value": f"{stats['annual_mean_pm25']:.1f} µg/m³",
             "severity": "warning",
             "note": f"WHO Annual Guideline: {AQI_PM25_WHO_ANNUAL} µg/m³",
@@ -75,7 +75,7 @@ def compute_aqi_crisis_kpis(df: pd.DataFrame) -> tuple[list[dict], list[dict]]:
         },
     ]
     secondary = [
-        {"label": "WHO Exceedance", "value": "Daily", "severity": "warning"},
+        {"label": "WHO Guideline Context", "value": "5 ug/m3 annual", "severity": "warning"},
         {
             "label": "Dominant Category",
             "value": (
@@ -168,7 +168,7 @@ def compute_aqi_patterns_kpis(df: pd.DataFrame) -> list[dict]:
         return []
     corr = df[POLLUTANT_COLS].corr()[COL_PM25].drop(COL_PM25).abs().idxmax()
     return [
-        {"label": "Strongest PM2.5 Driver", "value": corr, "severity": "warning"},
+        {"label": "Strongest Weather Correlation", "value": corr, "severity": "warning"},
         {"label": "Mean PM2.5", "value": f"{df[COL_PM25].mean():.1f} µg/m³", "severity": "warning"},
         {"label": "Seasons", "value": str(df[COL_SEASON].nunique()), "severity": "neutral"},
         {"label": "Days Analyzed", "value": f"{len(df):,}", "severity": "neutral"},
@@ -194,7 +194,7 @@ def compute_aqi_weather_kpis(df: pd.DataFrame) -> list[dict]:
     unstable = int((df[COL_AQI_CATEGORY] != df[COL_AQI_CATEGORY].shift()).sum())
     return [
         {"label": "Category Transitions", "value": str(unstable), "severity": "warning"},
-        {"label": "Atmospheric Volatility", "value": f"{unstable / max(len(df), 1) * 100:.1f}%", "severity": "warning"},
+        {"label": "Category Change Rate", "value": f"{unstable / max(len(df), 1) * 100:.1f}%", "severity": "warning"},
         {"label": "Dominant Category", "value": df[COL_AQI_CATEGORY].mode().iloc[0], "severity": "neutral"},
         {"label": "Severe Share", "value": f"{(df[COL_PM25] > 250).mean() * 100:.1f}%", "severity": "critical"},
     ]
@@ -372,5 +372,5 @@ def compute_aqi_lab_kpis(df: pd.DataFrame) -> list[dict]:
         {"label": "Met Variables", "value": str(len(PAIRPLOT_VARS)), "severity": "neutral"},
         {"label": "Days", "value": f"{len(df):,}", "severity": "neutral"},
         {"label": "Categories", "value": str(df[COL_AQI_CATEGORY].nunique()), "severity": "neutral"},
-        {"label": "Lab Mode", "value": "ACTIVE", "severity": "info"},
+        {"label": "Exploration Mode", "value": "Active", "severity": "info"},
     ]

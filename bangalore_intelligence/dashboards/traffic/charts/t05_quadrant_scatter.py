@@ -5,7 +5,8 @@ import plotly.graph_objects as go
 from config.data_config import COL_AREA, COL_ROAD
 from config.theme import TRAFFIC_AMBER, TRAFFIC_CRIMSON, TRAFFIC_TEAL
 from filters.interaction import emphasis_opacity, related_area_for_road
-from utils.plotly_engine import apply_dashboard_theme, area_color, empty_figure
+from utils.formatters import hover_congestion, hover_speed, hover_template
+from utils.plotly_engine import apply_dashboard_theme, empty_figure
 from utils.plotly_helpers import add_quadrant_lines, add_quadrant_zone_labels
 
 
@@ -49,7 +50,7 @@ def render(data, config=None):
         elif highlight_area:
             opacities.append(emphasis_opacity(area, highlight_area, base=0.78))
         else:
-            opacities.append(0.78)
+            opacities.append(0.48)
     line_width = [
         2.8 if highlight_road and row[COL_ROAD] == highlight_road else 1.2
         for _, row in data.iterrows()
@@ -70,14 +71,13 @@ def render(data, config=None):
             customdata=data[
                 [COL_AREA, "mean_speed", "total_incidents", "pct_at_max_capacity"]
             ].values,
-            hovertemplate=(
-                "<b>%{text}</b> · %{customdata[0]}<br>"
-                "Congestion %{y:.1f}<br>"
-                "Capacity %{x:.1f}%<br>"
-                "Speed %{customdata[1]:.1f} km/h<br>"
-                "Incidents %{customdata[2]:.0f}<br>"
-                "At max cap %{customdata[3]:.0%}"
-                "<extra></extra>"
+            hovertemplate=hover_template(
+                "<b>%{text}</b> · %{customdata[0]}",
+                hover_congestion(),
+                "Capacity %{x:.1f}%",
+                hover_speed("customdata[1]"),
+                "Incidents %{customdata[2]:.0f}",
+                "At max cap %{customdata[3]:.0%}",
             ),
         )
     )
@@ -91,7 +91,11 @@ def render(data, config=None):
         yaxis_title="Mean Congestion Index",
         xaxis=dict(range=[0, 105]),
         yaxis=dict(range=[0, 105]),
-        margin=dict(l=56, r=24, t=16, b=56),
-        height=cfg.get("height"),
     )
-    return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "hero"), show_legend=False)
+    return apply_dashboard_theme(
+        fig,
+        dashboard,
+        role=cfg.get("role", "hero"),
+        show_legend=False,
+        chart_type="scatter_dense",
+    )

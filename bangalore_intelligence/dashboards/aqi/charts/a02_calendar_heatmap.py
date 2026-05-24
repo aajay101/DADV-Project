@@ -1,9 +1,9 @@
 """A-02 · 3-Year AQI Calendar Heatmap."""
 
-import numpy as np
 import plotly.graph_objects as go
 
 from config.data_config import COL_PM25
+from utils.formatters import hover_pm25, hover_template
 from utils.plotly_engine import AQI_CATEGORY_COLORS, apply_dashboard_theme, empty_figure
 
 
@@ -78,7 +78,7 @@ def render(data, config=None):
                 [0.8, AQI_CATEGORY_COLORS["Very Poor"]],
                 [1, AQI_CATEGORY_COLORS["Severe"]],
             ],
-            hovertemplate="Year %{y} · Week %{x}<br>PM2.5: %{z:.1f} µg/m³<extra></extra>",
+            hovertemplate=hover_template("Year %{y} · Week %{x}", f"{hover_pm25('z')}"),
             showscale=True,
             colorbar=dict(title="PM2.5", thickness=12, len=0.6),
         )

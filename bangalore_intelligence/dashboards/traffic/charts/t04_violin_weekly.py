@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 
 from config.data_config import COL_CONGESTION
 from config.theme import TRAFFIC_CRIMSON, TRAFFIC_TEAL
+from utils.formatters import hover_congestion, hover_template
 from utils.plotly_engine import apply_dashboard_theme, empty_figure
 
 WEEK_ORDER = [
@@ -37,7 +38,7 @@ def render(data, config=None):
                     name=day,
                     marker_color=TRAFFIC_CRIMSON,
                     line_color=TRAFFIC_TEAL,
-                    hovertemplate=f"{day}<br>%{{y:.1f}}<extra></extra>",
+                    hovertemplate=hover_template(day, hover_congestion()),
                 )
             )
     else:
@@ -54,7 +55,7 @@ def render(data, config=None):
                     points=False,
                     box_visible=True,
                     meanline_visible=True,
-                    hovertemplate=f"{day}<br>%{{y:.1f}}<extra></extra>",
+                    hovertemplate=hover_template(day, hover_congestion()),
                 )
             )
 
@@ -63,6 +64,5 @@ def render(data, config=None):
         yaxis_title="Congestion Index",
         yaxis=dict(range=[0, 100]),
         margin=dict(l=48, r=24, t=16, b=56),
-        height=cfg.get("height"),
     )
     return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "supporting"), show_legend=False)

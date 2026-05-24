@@ -24,9 +24,18 @@ import streamlit as st
 
 
 
-from config.data_config import AQI_CATEGORIES, TRAFFIC_AREAS
-
+from components.interaction_education.focus_behavior_help import render_clear_focus_hint
+from components.interaction_education.interaction_mode_help import render_chart_interaction_mode_hint
+from components.interaction_education.overlay_explanations import render_overlay_hint
 from filters.state import AQI_STATE_DEFAULTS, TRAFFIC_STATE_DEFAULTS
+from filters.transitions import (
+    ChartFocusChanged,
+    FocusCleared,
+    TransitionResult,
+    dispatch,
+    request_rerun,
+    request_rerun_for_last_transition,
+)
 
 
 
@@ -37,8 +46,6 @@ LinkedDomain = Literal["traffic", "aqi"]
 
 
 BUNDLE_KEY_LINKED_CONTROLS = "linked_controls"
-
-INTERACTION_SESSION_KEY = "interaction"
 
 CHART_EPOCH_KEY = "chart_selection_epoch"
 
@@ -120,52 +127,6 @@ INTERACTION_DEFAULTS: dict[str, Any] = {
 
 
 
-_TRAFFIC_VIEW_DEFAULTS: dict[str, Any] = {
-
-    "selected_chart": None,
-
-    "selected_road": None,
-
-    "selected_area": None,
-
-    "selected_month": None,
-
-    "selected_quadrant": None,
-
-    "focus_mode": None,
-
-    "focus_entity": None,
-
-}
-
-
-
-_AQI_VIEW_DEFAULTS: dict[str, Any] = {
-
-    "selected_chart": None,
-
-    "selected_day": None,
-
-    "selected_year": None,
-
-    "selected_week": None,
-
-    "selected_pollutant": None,
-
-    "selected_category": None,
-
-    "selected_season": None,
-
-    "selected_regime": None,
-
-    "focus_mode": None,
-
-    "context_pm25": None,
-
-}
-
-
-
 QUADRANT_LABELS = {
 
     "critical_overload": "Critical Overload",
@@ -204,19 +165,12 @@ def init_interaction_state() -> None:
 
             st.session_state[key] = value
 
-    if INTERACTION_SESSION_KEY not in st.session_state:
-
-        st.session_state[INTERACTION_SESSION_KEY] = {
-
-            "traffic": dict(_TRAFFIC_VIEW_DEFAULTS),
-
-            "aqi": dict(_AQI_VIEW_DEFAULTS),
-
-        }
-
     if CHART_EPOCH_KEY not in st.session_state:
 
         st.session_state[CHART_EPOCH_KEY] = 0
+    if "chart_selection_epochs" not in st.session_state:
+
+        st.session_state["chart_selection_epochs"] = {}
 
 
 
@@ -230,82 +184,12 @@ def _ensure_initialized() -> None:
 
 
 
-def _sync_interaction_view(dashboard: DashboardId) -> None:
-
-    _ensure_initialized()
-
-    blob = st.session_state[INTERACTION_SESSION_KEY]
-
-    if dashboard == "traffic":
-
-        blob["traffic"] = {
-
-            "selected_chart": st.session_state.get("traffic_focus_chart"),
-
-            "selected_road": st.session_state.get("traffic_selected_road"),
-
-            "selected_area": st.session_state.get("traffic_selected_area"),
-
-            "selected_month": st.session_state.get("traffic_selected_month"),
-
-            "selected_quadrant": st.session_state.get("traffic_selected_quadrant"),
-
-            "focus_mode": st.session_state.get("traffic_focus_mode"),
-
-            "focus_entity": st.session_state.get("traffic_radar_focus_area"),
-
-        }
-
-    else:
-
-        blob["aqi"] = {
-
-            "selected_chart": st.session_state.get("aqi_focus_chart"),
-
-            "selected_day": st.session_state.get("aqi_selected_date"),
-
-            "selected_year": st.session_state.get("aqi_selected_year"),
-
-            "selected_week": st.session_state.get("aqi_selected_week"),
-
-            "selected_pollutant": st.session_state.get("aqi_selected_pollutant"),
-
-            "selected_category": st.session_state.get("aqi_selected_category"),
-
-            "selected_season": st.session_state.get("aqi_selected_season"),
-
-            "selected_regime": st.session_state.get("aqi_selected_regime"),
-
-            "focus_mode": st.session_state.get("aqi_focus_mode"),
-
-            "context_pm25": st.session_state.get("aqi_context_pm25"),
-
-        }
-
-
-
-
-
-def bump_chart_epoch() -> int:
-
-    _ensure_initialized()
-
-    st.session_state[CHART_EPOCH_KEY] = int(st.session_state.get(CHART_EPOCH_KEY, 0)) + 1
-
-    return st.session_state[CHART_EPOCH_KEY]
-
-
-
-
-
 def chart_widget_key(page_key: str, chart_id: str, dashboard: str) -> str:
 
-    epoch = st.session_state.get(CHART_EPOCH_KEY, 0)
+    epochs = st.session_state.get("chart_selection_epochs") or {}
+    epoch = int(epochs.get(chart_id, st.session_state.get(CHART_EPOCH_KEY, 0)))
 
     return f"buip_{dashboard}_{page_key}_{chart_id}_{epoch}"
-
-
-
 
 
 # --- Normalized interaction snapshots ---
@@ -318,21 +202,22 @@ def read_traffic_interaction() -> dict[str, Any]:
 
     _ensure_initialized()
 
-    _sync_interaction_view("traffic")
-
     area = st.session_state.get("traffic_selected_area")
 
     road = st.session_state.get("traffic_selected_road")
 
     return {
 
-        **st.session_state[INTERACTION_SESSION_KEY]["traffic"],
-
+        "selected_chart": st.session_state.get("traffic_focus_chart"),
         "selected_area": area,
 
         "selected_road": road,
 
         "selected_month": st.session_state.get("traffic_selected_month"),
+
+        "selected_quadrant": st.session_state.get("traffic_selected_quadrant"),
+
+        "focus_mode": st.session_state.get("traffic_focus_mode"),
 
         "focus_entity": st.session_state.get("traffic_radar_focus_area"),
 
@@ -350,15 +235,21 @@ def read_aqi_interaction() -> dict[str, Any]:
 
     _ensure_initialized()
 
-    _sync_interaction_view("aqi")
-
     season = st.session_state.get("aqi_selected_season")
 
     category = st.session_state.get("aqi_selected_category")
 
     return {
 
-        **st.session_state[INTERACTION_SESSION_KEY]["aqi"],
+        "selected_chart": st.session_state.get("aqi_focus_chart"),
+
+        "selected_day": st.session_state.get("aqi_selected_date"),
+
+        "selected_year": st.session_state.get("aqi_selected_year"),
+
+        "selected_week": st.session_state.get("aqi_selected_week"),
+
+        "selected_pollutant": st.session_state.get("aqi_selected_pollutant"),
 
         "selected_category": category,
 
@@ -369,6 +260,10 @@ def read_aqi_interaction() -> dict[str, Any]:
         "selected_month": st.session_state.get("aqi_selected_month"),
 
         "selected_regime": st.session_state.get("aqi_selected_regime"),
+
+        "focus_mode": st.session_state.get("aqi_focus_mode"),
+
+        "context_pm25": st.session_state.get("aqi_context_pm25"),
 
         "linked_enabled": bool(
 
@@ -404,11 +299,19 @@ def read_interaction_state(dashboard: DashboardId) -> dict[str, Any]:
 
 def _traffic_context_label(road: str | None, area: str | None) -> str | None:
 
+    month = st.session_state.get("traffic_selected_month")
+
     if road:
 
         quad = quadrant_label(st.session_state.get("traffic_selected_quadrant"))
 
-        return f"{road} · {quad}" if quad != "—" else road
+        base = f"{road} · {quad}" if quad != "—" else road
+
+        return f"{base} · {month}" if month else base
+
+    if area and month:
+
+        return f"{area} · {month}"
 
     return area
 
@@ -486,6 +389,8 @@ def get_traffic_context() -> dict:
 
         "highlight_road": road,
 
+        "highlight_month": state.get("selected_month"),
+
         "highlight_quadrant": state.get("selected_quadrant"),
 
         "focus_mode": state.get("focus_mode"),
@@ -538,230 +443,22 @@ def get_chart_context(dashboard: DashboardId) -> dict:
 
 
 
-def apply_interaction_payload(dashboard: DashboardId, payload: dict[str, Any]) -> None:
+def apply_interaction_payload(dashboard: DashboardId, payload: dict[str, Any]) -> TransitionResult:
 
-    """Apply normalized investigation payload from chart handlers."""
-
-    _ensure_initialized()
-
-    chart = payload.get("chart")
-
-    if dashboard == "traffic":
-
-        st.session_state["traffic_focus_chart"] = chart
-
-        st.session_state["traffic_focus_mode"] = payload.get("focus_mode")
-
-        if "selected_road" in payload:
-
-            st.session_state["traffic_selected_road"] = payload.get("selected_road")
-
-            if payload.get("selected_road"):
-
-                st.session_state["traffic_selected_area"] = payload.get("selected_area")
-
-        elif "selected_area" in payload:
-
-            st.session_state["traffic_selected_area"] = payload.get("selected_area")
-
-            if payload.get("selected_area"):
-
-                st.session_state["traffic_selected_road"] = None
-
-        if "selected_quadrant" in payload:
-
-            st.session_state["traffic_selected_quadrant"] = payload.get("selected_quadrant")
-
-        if payload.get("focus_entity"):
-
-            st.session_state["traffic_radar_focus_area"] = payload["focus_entity"]
-
-        elif payload.get("selected_area") and payload.get("focus_mode") == "radar_comparison":
-
-            st.session_state["traffic_radar_focus_area"] = payload["selected_area"]
-
-    else:
-
-        st.session_state["aqi_focus_chart"] = chart
-
-        st.session_state["aqi_focus_mode"] = payload.get("focus_mode")
-
-        for key in (
-
-            "selected_date",
-
-            "selected_category",
-
-            "selected_season",
-
-            "selected_regime",
-
-            "selected_pollutant",
-
-        ):
-
-            sk = f"aqi_{key}"
-
-            if key in payload:
-
-                st.session_state[sk] = payload.get(key)
-
-        if "selected_year" in payload:
-
-            st.session_state["aqi_selected_year"] = payload.get("selected_year")
-
-        if "selected_week" in payload:
-
-            st.session_state["aqi_selected_week"] = payload.get("selected_week")
-
-        if "context_pm25" in payload:
-
-            st.session_state["aqi_context_pm25"] = payload.get("context_pm25")
-
-    _sync_interaction_view(dashboard)
-
-
-
-
-
-def set_traffic_area(area: str | None) -> None:
+    """Apply normalized chart payload to visual focus only."""
 
     _ensure_initialized()
+    return dispatch(ChartFocusChanged(dashboard=dashboard, payload=payload))
 
-    st.session_state["traffic_selected_area"] = area
 
-    if area:
 
-        st.session_state["traffic_selected_road"] = None
 
-    _sync_interaction_view("traffic")
 
+def clear_investigation(dashboard: DashboardId) -> TransitionResult:
 
+    """Clear chart-linked visual focus and investigation overlay; global filters remain unchanged."""
 
-
-
-def set_traffic_road(road: str | None) -> None:
-
-    _ensure_initialized()
-
-    st.session_state["traffic_selected_road"] = road
-
-    if road:
-
-        st.session_state["traffic_selected_area"] = None
-
-    _sync_interaction_view("traffic")
-
-
-
-
-
-def set_aqi_season(season: str | None) -> None:
-
-    _ensure_initialized()
-
-    st.session_state["aqi_selected_season"] = season
-
-    _sync_interaction_view("aqi")
-
-
-
-
-
-def set_aqi_category(category: str | None) -> None:
-
-    _ensure_initialized()
-
-    st.session_state["aqi_selected_category"] = category
-
-    _sync_interaction_view("aqi")
-
-
-
-
-
-def clear_traffic_selection() -> None:
-
-    _ensure_initialized()
-
-    st.session_state["traffic_selected_area"] = None
-
-    st.session_state["traffic_selected_road"] = None
-
-    st.session_state["traffic_selected_month"] = None
-
-    st.session_state["traffic_radar_focus_area"] = None
-
-    st.session_state["traffic_selected_quadrant"] = None
-
-    st.session_state["traffic_focus_chart"] = None
-
-    st.session_state["traffic_focus_mode"] = None
-
-    _sync_interaction_view("traffic")
-
-
-
-
-
-def clear_aqi_selection() -> None:
-
-    _ensure_initialized()
-
-    st.session_state["aqi_selected_category"] = None
-
-    st.session_state["aqi_selected_season"] = None
-
-    st.session_state["aqi_selected_date"] = None
-
-    st.session_state["aqi_selected_month"] = None
-
-    st.session_state["aqi_selected_regime"] = None
-
-    st.session_state["aqi_selected_year"] = None
-
-    st.session_state["aqi_selected_week"] = None
-
-    st.session_state["aqi_selected_pollutant"] = None
-
-    st.session_state["aqi_focus_chart"] = None
-
-    st.session_state["aqi_focus_mode"] = None
-
-    st.session_state["aqi_context_pm25"] = None
-
-    _sync_interaction_view("aqi")
-
-
-
-
-
-def clear_selection(dashboard: DashboardId) -> None:
-
-    if dashboard == "traffic":
-
-        clear_traffic_selection()
-
-    else:
-
-        clear_aqi_selection()
-
-
-
-
-
-def clear_investigation(dashboard: DashboardId) -> None:
-
-    """Reset investigation focus only — filters and navigation unchanged."""
-
-    clear_selection(dashboard)
-
-    st.session_state.pop("_chart_sel_sig", None)
-
-    bump_chart_epoch()
-
-
-
+    return dispatch(FocusCleared(dashboard=dashboard))
 
 
 def has_active_traffic_selection() -> bool:
@@ -775,6 +472,8 @@ def has_active_traffic_selection() -> bool:
         or st.session_state.get("traffic_selected_road")
 
         or st.session_state.get("traffic_radar_focus_area")
+
+        or st.session_state.get("traffic_selected_month")
 
         or st.session_state.get("traffic_focus_mode")
 
@@ -994,41 +693,43 @@ def prepare_investigation_interaction(
 
 def render_investigation_chrome(bundle: dict, dashboard: DashboardId, page_key: str) -> dict[str, Any]:
 
-    """Investigation strip: linked selectors, breadcrumb, clear actions."""
+    """Chart-focus strip: breadcrumb and clear action."""
 
     meta = prepare_investigation_interaction(bundle, dashboard)
 
-    if meta["is_linked_page"]:
-
-        render_page_linked_controls(bundle)
-
-
-
     if meta["has_investigation"] or meta.get("breadcrumb"):
 
-        bc = meta.get("breadcrumb") or "Investigation active"
+        bc = meta.get("breadcrumb") or "Chart focus active"
 
-        c1, c2, c3 = st.columns([5, 1.2, 1.2])
+        c1, c2, c3 = st.columns([4.2, 1.2, 1.6])
 
         with c1:
 
-            st.caption(f"**Filtered by investigation** · {bc}")
+            focus_label = "Selected chart context" if dashboard == "aqi" else "Chart-linked focus"
+            st.caption(f"**{focus_label}** · {bc}")
 
         with c2:
 
-            if st.button("× Clear Focus", key=f"clear_focus_{dashboard}_{page_key}"):
+            render_clear_focus_hint()
 
-                clear_investigation(dashboard)
+            if st.button("× Clear focus", key=f"clear_focus_{dashboard}_{page_key}"):
 
-                st.rerun()
+                result = clear_investigation(dashboard)
+
+                request_rerun(result, source=f"clear_focus_{dashboard}_{page_key}")
 
         with c3:
 
-            if st.button("Reset Investigation", key=f"reset_inv_{dashboard}_{page_key}"):
+            if meta.get("has_investigation"):
 
-                clear_investigation(dashboard)
+                render_overlay_hint(st.session_state, dashboard)
 
-                st.rerun()
+                if dashboard == "aqi":
+                    st.caption("Local investigation overlay; global filters remain separate.")
+                else:
+                    st.caption("Investigation overlay only; global filters remain unchanged.")
+            else:
+                render_chart_interaction_mode_hint(st.session_state, dashboard)
 
     return meta
 
@@ -1041,10 +742,6 @@ def render_investigation_interaction(bundle: dict, dashboard: DashboardId) -> st
     """Legacy entry — returns chart selection badge text."""
 
     meta = prepare_investigation_interaction(bundle, dashboard)
-
-    if meta["is_linked_page"]:
-
-        render_page_linked_controls(bundle)
 
     return meta["selection_label"]
 
@@ -1062,125 +759,21 @@ def selection_label(dashboard: DashboardId) -> str | None:
 
 
 
-def render_traffic_linked_selector() -> None:
-
-    _ensure_initialized()
-
-    areas = ["— All areas —", *TRAFFIC_AREAS]
-
-    current = st.session_state.get("traffic_selected_area")
-
-    idx = areas.index(current) if current in areas else 0
-
-    choice = st.selectbox(
-
-        "Linked focus · area",
-
-        options=areas,
-
-        index=idx,
-
-        key="traffic_linked_area_selector",
-
-    )
-
-    new_val = None if choice == "— All areas —" else choice
-
-    if new_val != current:
-
-        set_traffic_area(new_val)
-
-        st.rerun()
-
-
-
-
-
-def render_aqi_linked_selector() -> None:
-
-    _ensure_initialized()
-
-    seasons = ["— All seasons —", "Winter", "Spring", "Monsoon", "Post-Monsoon"]
-
-    current = st.session_state.get("aqi_selected_season")
-
-    idx = seasons.index(current) if current in seasons else 0
-
-    choice = st.selectbox(
-
-        "Linked focus · season",
-
-        options=seasons,
-
-        index=idx,
-
-        key="aqi_linked_season_selector",
-
-    )
-
-    new_val = None if choice == "— All seasons —" else choice
-
-    if new_val != current:
-
-        set_aqi_season(new_val)
-
-        st.rerun()
-
-
-
-    categories = ["— All categories —", *AQI_CATEGORIES]
-
-    cat_current = st.session_state.get("aqi_selected_category")
-
-    cat_idx = categories.index(cat_current) if cat_current in categories else 0
-
-    cat_choice = st.selectbox(
-
-        "Linked focus · AQI category",
-
-        options=categories,
-
-        index=cat_idx,
-
-        key="aqi_linked_category_selector",
-
-    )
-
-    new_cat = None if cat_choice == "— All categories —" else cat_choice
-
-    if new_cat != cat_current:
-
-        set_aqi_category(new_cat)
-
-        st.rerun()
-
-
-
-
-
-def render_page_linked_controls(bundle: dict) -> None:
-
-    domain = get_linked_domain(bundle)
-
-    if domain == "traffic":
-
-        render_traffic_linked_selector()
-
-    elif domain == "aqi":
-
-        render_aqi_linked_selector()
-
-
-
-
-
 def merge_chart_config(base: dict | None, dashboard: DashboardId) -> dict:
+
+    from config.chart_defaults import chart_size_for
 
     cfg = dict(base or {})
 
     cfg["dashboard"] = dashboard
 
     cfg.update(get_chart_context(dashboard))
+
+    chart_id = cfg.get("chart_id")
+
+    if chart_id and "chart_size" not in cfg:
+
+        cfg["chart_size"] = chart_size_for(chart_id, cfg.get("role", "hero"))
 
     return cfg
 
@@ -1236,6 +829,6 @@ def process_plotly_selection(
 
         st.session_state["_chart_sel_sig"] = sig
 
-        st.rerun()
+        request_rerun_for_last_transition(source=f"plotly_selection_{chart_id}")
 
 

@@ -1,9 +1,10 @@
-"""A-07 · Extreme Day Radar — category meteorological profiles."""
+"""A-07 · PM2.5 Category Weather Profile — category meteorological profiles."""
 
 import plotly.graph_objects as go
 
 from config.data_config import COL_AQI_CATEGORY, COL_H, COL_SLP, COL_T, COL_TM, COL_V, COL_VV
 from config.theme import AQI_COLOR_GOOD, AQI_COLOR_MODERATE, AQI_COLOR_SEVERE
+from utils.formatters import hover_radar_theta_r, hover_template
 from utils.plotly_engine import apply_dashboard_theme, empty_figure
 
 PROFILE_METRICS = [COL_T, COL_TM, COL_H, COL_VV, COL_V, COL_SLP]
@@ -36,13 +37,18 @@ def render(data, config=None):
                 fill="toself",
                 opacity=0.35,
                 line=dict(color=CAT_COLORS.get(cat, AQI_COLOR_MODERATE), width=2),
-                hovertemplate="<b>%{fullData.name}</b><br>%{theta}: %{r:.0f}<extra></extra>",
+                hovertemplate=hover_template("<b>%{fullData.name}</b>", hover_radar_theta_r()),
             )
         )
 
     fig.update_layout(
         polar=dict(radialaxis=dict(range=[0, 100], showticklabels=True)),
         margin=dict(l=48, r=48, t=24, b=48),
-        height=cfg.get("height"),
     )
-    return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "supporting"), show_legend=True)
+    return apply_dashboard_theme(
+        fig,
+        dashboard,
+        role=cfg.get("role", "supporting"),
+        show_legend=True,
+        chart_type="radar",
+    )

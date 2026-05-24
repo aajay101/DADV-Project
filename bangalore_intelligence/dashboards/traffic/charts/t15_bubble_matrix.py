@@ -1,42 +1,47 @@
-"""T-15 · Area × Month Bubble Matrix — temporal area stress comparison."""
+"""T-15 · Area-month congestion heatmap — mean congestion by area and month."""
 
 import plotly.graph_objects as go
 
 from config.data_config import COL_AREA
-from utils.plotly_engine import apply_dashboard_theme, area_color, empty_figure
+from utils.formatters import hover_congestion, hover_template
+from utils.plotly_engine import (
+    HEATMAP_SCALE_TRAFFIC,
+    apply_dashboard_theme,
+    empty_figure,
+)
 
 
 def render(data, config=None):
     if data is None or data.empty:
-        return empty_figure("No monthly area bubble data", "traffic")
+        return empty_figure("No monthly area heatmap data", "traffic")
 
     cfg = config or {}
     dashboard = cfg.get("dashboard", "traffic")
-    highlight = cfg.get("highlight_area")
+    months = sorted(data["month"].unique())
+    areas = sorted(data[COL_AREA].unique())
 
-    max_inc = max(data["total_incidents"].max(), 1)
-    sizes = (data["total_incidents"] / max_inc * 36 + 10).clip(10, 44)
-    colors = [area_color(a, dashboard) for a in data[COL_AREA]]
-    opacities = [0.85 if (not highlight or a == highlight) else 0.25 for a in data[COL_AREA]]
+    congestion = (
+        data.pivot(index=COL_AREA, columns="month", values="mean_congestion")
+        .reindex(index=areas, columns=months)
+    )
+    incidents = (
+        data.pivot(index=COL_AREA, columns="month", values="total_incidents")
+        .reindex(index=areas, columns=months)
+        .fillna(0)
+    )
 
     fig = go.Figure(
-        go.Scatter(
-            x=data["month"].astype(str),
-            y=data[COL_AREA],
-            mode="markers",
-            marker=dict(
-                size=sizes,
-                color=colors,
-                opacity=opacities,
-                line=dict(width=1, color="#30363D"),
-            ),
-            customdata=data[["mean_congestion", "total_incidents", "pct_at_max_capacity"]].values,
-            hovertemplate=(
-                "<b>%{y}</b> · %{x}<br>"
-                "Congestion %{customdata[0]:.1f}<br>"
-                "Incidents %{customdata[1]:.0f}<br>"
-                "At max cap %{customdata[2]:.0%}"
-                "<extra></extra>"
+        go.Heatmap(
+            z=congestion.values,
+            x=[str(m) for m in congestion.columns],
+            y=list(congestion.index),
+            customdata=incidents.values,
+            colorscale=HEATMAP_SCALE_TRAFFIC,
+            colorbar=dict(title="Congestion %"),
+            hovertemplate=hover_template(
+                "<b>%{y}</b> · %{x}",
+                hover_congestion("z"),
+                "Incidents %{customdata:.0f}",
             ),
         )
     )
@@ -44,6 +49,11 @@ def render(data, config=None):
         xaxis_title="Month",
         yaxis_title="Area",
         margin=dict(l=120, r=24, t=16, b=72),
-        height=cfg.get("height"),
     )
-    return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "supporting"), show_legend=False)
+    return apply_dashboard_theme(
+        fig,
+        dashboard,
+        role=cfg.get("role", "supporting"),
+        show_legend=False,
+        chart_type="heatmap",
+    )

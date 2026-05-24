@@ -1,9 +1,10 @@
-"""A-10 · Wind Rescue — wind band × season mean PM2.5."""
+"""A-10 · Wind Speed Band Comparison — wind band × season mean PM2.5."""
 
 import plotly.graph_objects as go
 
 from config.data_config import COL_SEASON
 from config.theme import AQI_COLOR_MODERATE, AQI_COLOR_POOR, AQI_COLOR_SEVERE, AQI_COLOR_VERY_POOR
+from utils.formatters import hover_pm25, hover_template
 from utils.plotly_engine import apply_dashboard_theme, empty_figure
 
 SEASON_COLORS = {
@@ -28,7 +29,7 @@ def render(data, config=None):
                 y=grp["mean_pm25"],
                 name=season,
                 marker_color=SEASON_COLORS.get(season, AQI_COLOR_MODERATE),
-                hovertemplate="%{x}<br>%{fullData.name}<br>%{y:.1f} µg/m³<extra></extra>",
+                hovertemplate=hover_template("%{x}", "%{fullData.name}", hover_pm25()),
             )
         )
 
@@ -37,6 +38,5 @@ def render(data, config=None):
         xaxis_title="Wind Speed Band",
         yaxis_title="Mean PM2.5 (µg/m³)",
         margin=dict(l=56, r=24, t=16, b=72),
-        height=cfg.get("height"),
     )
     return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "supporting"), show_legend=True)

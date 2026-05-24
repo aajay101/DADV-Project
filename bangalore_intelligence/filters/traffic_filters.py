@@ -2,8 +2,9 @@
 
 import pandas as pd
 
-from config.data_config import COL_AREA, COL_DATE
+from config.data_config import COL_AREA, COL_DATE, COL_ROAD, COL_ROADWORK, COL_WEATHER
 from filters.state import TRAFFIC_STATE_DEFAULTS
+from utils.validators import validate_date_range, validate_filter_date_range
 
 
 def apply_traffic_filters(df: pd.DataFrame, state: dict, exclude_date_filter: bool = False) -> pd.DataFrame:
@@ -11,23 +12,36 @@ def apply_traffic_filters(df: pd.DataFrame, state: dict, exclude_date_filter: bo
         return df
     out = df.copy()
     if not exclude_date_filter:
-        start = pd.Timestamp(state.get("traffic_date_start", TRAFFIC_STATE_DEFAULTS["traffic_date_start"]))
-        end = pd.Timestamp(state.get("traffic_date_end", TRAFFIC_STATE_DEFAULTS["traffic_date_end"]))
-        out = out[(out[COL_DATE] >= start) & (out[COL_DATE] <= end)]
+        start = state.get("traffic_date_start", TRAFFIC_STATE_DEFAULTS["traffic_date_start"])
+        end = state.get("traffic_date_end", TRAFFIC_STATE_DEFAULTS["traffic_date_end"])
+        if not validate_filter_date_range(start, end).ok:
+            return out.iloc[0:0].copy()
+        if not validate_date_range(out, start, end, COL_DATE).ok:
+            return out.iloc[0:0].copy()
+        start_ts = pd.Timestamp(start)
+        end_ts = pd.Timestamp(end)
+        out = out[(out[COL_DATE] >= start_ts) & (out[COL_DATE] <= end_ts)]
+
     areas = state.get("traffic_selected_areas") or []
     if areas:
         out = out[out[COL_AREA].isin(areas)]
+
+    weather = state.get("traffic_selected_weather") or []
+    if weather:
+        out = out[out[COL_WEATHER].isin(weather)]
+
+    roadwork = state.get("traffic_selected_roadwork", TRAFFIC_STATE_DEFAULTS["traffic_selected_roadwork"])
+    if roadwork and roadwork != "Both":
+        out = out[out[COL_ROADWORK] == roadwork]
+
+    roads = state.get("traffic_selected_roads") or []
+    if roads:
+        out = out[out[COL_ROAD].isin(roads)]
+
     return out
 
 
 def reset_traffic_filters() -> None:
-    import streamlit as st
+    from filters.transitions import GlobalFiltersReset, dispatch
 
-    from filters.interaction import clear_traffic_selection
-
-    for key, value in TRAFFIC_STATE_DEFAULTS.items():
-        if key.startswith("traffic_"):
-            st.session_state[key] = value
-    clear_traffic_selection()
-    st.session_state["traffic_filters_active"] = False
-    st.cache_data.clear()
+    dispatch(GlobalFiltersReset(dashboard="traffic"))

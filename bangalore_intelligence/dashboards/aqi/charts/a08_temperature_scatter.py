@@ -3,6 +3,12 @@
 import plotly.graph_objects as go
 
 from config.data_config import AQI_CATEGORIES, COL_AQI_CATEGORY, COL_PM25, COL_TM
+from utils.formatters import (
+    hover_category_transition,
+    hover_pm25,
+    hover_temperature,
+    hover_template,
+)
 from utils.plotly_engine import AQI_CATEGORY_COLORS, apply_dashboard_theme, empty_figure
 
 
@@ -21,7 +27,7 @@ def _render_transition(data, cfg, dashboard):
             colorscale=colorscale,
             text=text,
             texttemplate="%{text}",
-            hovertemplate="From %{y} → %{x}<br>Days %{z}<extra></extra>",
+            hovertemplate=hover_template(hover_category_transition()),
             showscale=False,
         )
     )
@@ -29,7 +35,6 @@ def _render_transition(data, cfg, dashboard):
         xaxis_title="To Category",
         yaxis_title="From Category",
         margin=dict(l=96, r=32, t=16, b=96),
-        height=cfg.get("height"),
     )
     return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "hero"), show_legend=False)
 
@@ -44,14 +49,13 @@ def _render_scatter(data, cfg, dashboard):
                 mode="markers",
                 name=cat,
                 marker=dict(size=6, color=AQI_CATEGORY_COLORS.get(cat, "#5A8F72"), opacity=0.55),
-                hovertemplate="Tm %{x:.1f}°C<br>PM2.5 %{y:.1f} µg/m³<extra></extra>",
+                hovertemplate=hover_template(hover_temperature(), hover_pm25()),
             )
         )
     fig.update_layout(
         xaxis_title="Minimum Temperature (°C)",
         yaxis_title="PM2.5 (µg/m³)",
         margin=dict(l=56, r=24, t=16, b=48),
-        height=cfg.get("height"),
     )
     return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "hero"), show_legend=True)
 

@@ -3,7 +3,9 @@
 import plotly.graph_objects as go
 
 from config.data_config import COL_CONGESTION, COL_TRAFFIC_VOL
-from utils.plotly_engine import apply_dashboard_theme, empty_figure
+from config.theme import TRAFFIC_TEXT_MUTED
+from utils.formatters import hover_density_hex, hover_template
+from utils.plotly_engine import apply_dashboard_theme, empty_figure, traffic_volume_axis_range
 
 
 def render(data, config=None):
@@ -22,14 +24,30 @@ def render(data, config=None):
             nbinsx=20,
             nbinsy=20,
             colorscale="Reds",
-            hovertemplate="Volume %{x}<br>Congestion %{y}<br>Count %{z}<extra></extra>",
+            hovertemplate=hover_template(hover_density_hex()),
         )
     )
+    volume_range = traffic_volume_axis_range(x)
     fig.update_layout(
         xaxis_title="Traffic Volume",
         yaxis_title="Congestion Level",
+        xaxis=dict(range=list(volume_range)),
         yaxis=dict(range=[0, 100]),
         margin=dict(l=56, r=24, t=16, b=48),
-        height=cfg.get("height"),
     )
+    sampling = getattr(data, "attrs", {}).get("sampling", {})
+    if sampling.get("sampled"):
+        fig.add_annotation(
+            x=0.02,
+            y=0.02,
+            xref="paper",
+            yref="paper",
+            text=(
+                f"Sampled {sampling.get('sample_size'):,}/{sampling.get('source_rows'):,} "
+                "records · random_state=42"
+            ),
+            showarrow=False,
+            font=dict(size=10, color=TRAFFIC_TEXT_MUTED),
+            xanchor="left",
+        )
     return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "supporting"), show_legend=False)

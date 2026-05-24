@@ -3,6 +3,7 @@
 import plotly.graph_objects as go
 
 from config.data_config import COL_SEASON
+from utils.formatters import hover_template, hover_z_pm25
 from utils.plotly_engine import apply_dashboard_theme, empty_figure
 
 
@@ -26,13 +27,12 @@ def render(data, config=None):
                 [0.5, "#5A8F72"],
                 [1, "#A85A5A"],
             ],
-            hovertemplate="%{y} · %{x}<br>PM2.5 %{z:.1f} µg/m³<extra></extra>",
+            hovertemplate=hover_template("%{y} · %{x}", hover_z_pm25()),
         )
     )
     fig.update_layout(
         xaxis_title="SLP Band",
         yaxis_title="Season",
         margin=dict(l=88, r=32, t=16, b=56),
-        height=cfg.get("height"),
     )
     return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "supporting"), show_legend=False)

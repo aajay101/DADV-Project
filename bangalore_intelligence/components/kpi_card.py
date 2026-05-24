@@ -1,11 +1,14 @@
 """Executive-grade KPI card — severity, trend, gauge, states."""
 
+from components.explainability.explainability_trigger import render_explainability_trigger
+from components.explainability.explainability_utils import kpi_entry
 from components.loading_state import kpi_skeleton
 from components.states import border_for_state, opacity_for_state
+from config.spacing import KPI_CARD_MIN_HEIGHT, KPI_LABEL_TO_VALUE, KPI_VALUE_LINE_HEIGHT
 from config.typography import TYPE_KPI_LABEL, TYPE_KPI_VALUE, TYPE_KPI_VALUE_COMPACT, TYPE_KPI_VALUE_LARGE, css_from_type
 from config.theme import FONT_MONO, RADIUS_LG, SPACING_MD, SPACING_SM, get_dashboard_tokens, get_severity_colors
 from utils.html_styles import join_styles, pill_badge, styled_span
-from utils.ui_blocks import render_html_block
+from utils.ui_blocks import escape_text, render_html_block
 
 
 def _gauge_svg(percent: float, color: str, border_color: str) -> str:
@@ -34,6 +37,7 @@ def kpi_card(
     note: str | None = None,
     loading: bool = False,
     filtered_note: bool = False,
+    explainability_id: str | None = None,
 ) -> None:
     if loading:
         kpi_skeleton(dashboard)
@@ -50,7 +54,11 @@ def kpi_card(
     else:
         value_style = css_from_type(TYPE_KPI_VALUE, value_color, "font-variant-numeric:tabular-nums;")
 
-    label_style = css_from_type(TYPE_KPI_LABEL, tokens["text_muted"])
+    label_style = join_styles(
+        css_from_type(TYPE_KPI_LABEL, tokens["text_muted"]),
+        "display:block",
+        "overflow-wrap:anywhere",
+    )
     border = border_for_state(state, tokens)
     opacity = opacity_for_state(state)
 
@@ -58,28 +66,36 @@ def kpi_card(
     if note:
         note_style = join_styles(
             css_from_type(TYPE_KPI_LABEL, tokens["text_muted"]),
-            f"margin-top:{SPACING_SM}px",
+            f"margin-top:{SPACING_SM + 2}px",
             "font-style:italic",
+            "line-height:1.5",
         )
-        note_html = f'<div style="{note_style}">{note}</div>'
+        note_html = f'<div style="{note_style}">{escape_text(note)}</div>'
 
     delta_html = ""
     if delta:
         delta_color = tokens["severity_safe"] if delta_positive else tokens["severity_critical"]
         arrow = "▲" if delta_positive else "▼"
         delta_html = f"""
-        <div style="font-family:{FONT_MONO};font-size:12px;color:{delta_color};margin-top:{SPACING_SM}px;">
-            {arrow} {delta}
+        <div style="font-family:{FONT_MONO};font-size:12px;color:{delta_color};margin-top:{SPACING_SM}px;line-height:1.4;">
+            {arrow} {escape_text(delta)}
         </div>
         """
 
     icon_html = (
-        styled_span(icon, f"font-size:16px;margin-right:{SPACING_SM}px;opacity:0.7;")
+        styled_span(icon, f"font-size:16px;margin-right:{SPACING_SM}px;opacity:0.7;vertical-align:middle;")
         if icon
         else ""
     )
     badge_html = ""
-    if filtered_note:
+    if state == "stale":
+        badge_html = pill_badge(
+            "Stale",
+            f"{tokens['severity_warning']}22",
+            tokens["severity_warning"],
+            tokens["severity_warning"],
+        )
+    elif filtered_note:
         badge_html = pill_badge("Filtered", tokens["surface_3"], tokens["text_muted"], tokens["border"])
 
     gauge_html = ""
@@ -95,25 +111,36 @@ def kpi_card(
         border,
         left_border,
         f"border-radius:{RADIUS_LG}px",
-        f"padding:{SPACING_MD}px",
-        f"margin-bottom:{SPACING_SM}px",
+        f"padding:{SPACING_MD + 4}px {SPACING_MD}px",
+        f"min-height:{KPI_CARD_MIN_HEIGHT}px",
+        "box-sizing:border-box",
         f"opacity:{opacity}",
         "display:flex",
         "justify-content:space-between",
         "align-items:flex-start",
         f"gap:{SPACING_MD}px",
     )
-    value_block_style = join_styles(value_style, f"margin-top:{SPACING_SM}px")
+    value_block_style = join_styles(
+        value_style,
+        f"margin-top:{KPI_LABEL_TO_VALUE}px",
+        f"line-height:{KPI_VALUE_LINE_HEIGHT}",
+        "overflow-wrap:anywhere",
+        "word-break:break-word",
+    )
+    label_row_style = join_styles(
+        label_style,
+        "display:flex",
+        "flex-wrap:wrap",
+        "align-items:center",
+        f"gap:{SPACING_SM}px",
+    )
 
-    html = f"""
-    <div class="buip-kpi-card" style="{card_style}">
-        <div style="flex:1;">
-            <div style="{label_style}">{icon_html}{label} {badge_html}</div>
-            <div style="{value_block_style}">{value}</div>
-            {note_html}
-            {delta_html}
-        </div>
-        {gauge_html}
-    </div>
-    """
+    html = (
+        f'<div class="buip-kpi-card" style="{card_style}">'
+        f'<div style="flex:1;min-width:0;">'
+        f'<div style="{label_row_style}">{icon_html}<span>{escape_text(label)}</span> {badge_html}</div>'
+        f'<div style="{value_block_style}">{escape_text(value)}</div>'
+        f"{note_html}{delta_html}</div>{gauge_html}</div>"
+    )
     render_html_block(html)
+    render_explainability_trigger(kpi_entry(explainability_id), label="Explain KPI")

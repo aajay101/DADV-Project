@@ -3,6 +3,7 @@
 import plotly.graph_objects as go
 
 from config.data_config import COL_ROADWORK, COL_WEATHER
+from utils.formatters import hover_template, hover_z_congestion
 from utils.plotly_engine import apply_dashboard_theme, empty_figure
 
 
@@ -29,13 +30,12 @@ def render(data, config=None):
                 [0.5, "#2A9D8F"],
                 [1, "#E5383B"],
             ],
-            hovertemplate="Weather %{y}<br>Roadwork %{x}<br>Congestion %{z:.1f}<extra></extra>",
+            hovertemplate=hover_template("Weather %{y}", "Roadwork %{x}", hover_z_congestion()),
         )
     )
     fig.update_layout(
         xaxis_title="Roadwork Status",
         yaxis_title="Weather",
         margin=dict(l=80, r=24, t=16, b=56),
-        height=cfg.get("height"),
     )
     return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "supporting"), show_legend=False)

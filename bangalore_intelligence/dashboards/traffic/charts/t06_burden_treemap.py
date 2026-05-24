@@ -3,6 +3,7 @@
 import plotly.graph_objects as go
 
 from config.data_config import COL_AREA, COL_ROAD
+from utils.formatters import hover_congestion, hover_template
 from utils.plotly_engine import apply_dashboard_theme, empty_figure, severity_color
 
 
@@ -39,15 +40,16 @@ def render(data, config=None):
                 colors=colors,
                 line=dict(width=1.5, color=line_colors),
             ),
-            hovertemplate=(
-                "<b>%{label}</b><br>Area %{parent}<br>"
-                "Impact %{value:.1f}<br>Congestion %{customdata:.1f}<extra></extra>"
+            hovertemplate=hover_template(
+                "<b>%{label}</b>",
+                "Area %{parent}",
+                "Impact %{value:.1f}",
+                hover_congestion("customdata"),
             ),
             customdata=data["mean_congestion"],
         )
     )
     fig.update_layout(
         margin=dict(l=8, r=8, t=8, b=8),
-        height=cfg.get("height"),
     )
     return apply_dashboard_theme(fig, dashboard, role=cfg.get("role", "supporting"), show_legend=False)

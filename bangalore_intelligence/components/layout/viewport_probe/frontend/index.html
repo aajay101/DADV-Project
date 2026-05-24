@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden; background: transparent; }
+  </style>
+</head>
+<body>
+  <script>
+    (function () {
+      function streamlitMessage(type, data) {
+        window.parent.postMessage(
+          Object.assign({ isStreamlitMessage: true, type: type }, data || {}),
+          "*"
+        );
+      }
+
+      function measureWidth() {
+        try {
+          const doc = window.parent.document.documentElement;
+          const body = window.parent.document.body;
+          const w = Math.max(
+            doc ? doc.clientWidth : 0,
+            body ? body.clientWidth : 0,
+            window.parent.innerWidth || 0,
+            window.innerWidth || 0
+          );
+          return Math.round(w) || 1280;
+        } catch (e) {
+          return Math.round(window.innerWidth) || 1280;
+        }
+      }
+
+      let lastSent = null;
+      let debounceTimer = null;
+
+      function publish() {
+        const w = measureWidth();
+        if (lastSent !== null && Math.abs(w - lastSent) < 24) {
+          return;
+        }
+        lastSent = w;
+        streamlitMessage("streamlit:setComponentValue", { value: w });
+      }
+
+      function schedulePublish() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(publish, 180);
+      }
+
+      streamlitMessage("streamlit:setFrameHeight", { height: 0 });
+      streamlitMessage("streamlit:setComponentReady", { isReady: true });
+      publish();
+
+      window.addEventListener("resize", schedulePublish);
+      try {
+        const ro = new ResizeObserver(schedulePublish);
+        ro.observe(window.parent.document.documentElement);
+      } catch (e) {
+        /* ResizeObserver unavailable in older browsers */
+      }
+    })();
+  </script>
+</body>
+</html>

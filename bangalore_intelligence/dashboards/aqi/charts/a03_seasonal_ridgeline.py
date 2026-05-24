@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 from config.data_config import COL_SEASON
 from config.theme import AQI_COLOR_MODERATE, AQI_TEXT_MUTED
 from utils.analytics_kde import gaussian_kde_1d
+from utils.formatters import hover_pm25_axis, hover_template
 from utils.plotly_engine import apply_dashboard_theme, empty_figure
 
 SEASON_COLORS = {
@@ -60,7 +61,7 @@ def render(data, config=None):
                 name=season,
                 line=dict(color=color, width=1.4),
                 fillcolor=_hex_rgba(color, 0.38),
-                hovertemplate=f"<b>{season}</b><br>PM2.5 %{{x:.0f}} µg/m³<extra></extra>",
+                hovertemplate=hover_template(f"<b>{season}</b>", hover_pm25_axis("x")),
             )
         )
 
@@ -72,7 +73,6 @@ def render(data, config=None):
             ticktext=list(reversed(seasons)),
         ),
         margin=dict(l=100, r=24, t=16, b=48),
-        height=cfg.get("height"),
     )
     fig.add_annotation(
         x=0,

@@ -1,6 +1,5 @@
 """Centralized Plotly visualization engine — theming and figure helpers."""
 
-from copy import deepcopy
 
 import plotly.graph_objects as go
 
@@ -61,14 +60,81 @@ def area_color(area: str, dashboard: str = "traffic") -> str:
     return "#8B949E"
 
 
+def traffic_area_colors() -> dict[str, str]:
+    """Canonical traffic area palette (guide-aligned, stable across charts)."""
+    return dict(TRAFFIC_AREA_COLORS)
+
+
+def traffic_speed_axis_range(values=None, *, pad: float = 2.0) -> tuple[float, float]:
+    """X-axis domain for speed scatter / threshold charts (Phase 0 runtime extents)."""
+    from config.data_config import (
+        COL_SPEED,
+        TRAFFIC_RUNTIME_SPEED_MAX,
+        TRAFFIC_RUNTIME_SPEED_MIN,
+        TRAFFIC_SEMANTIC_RANGES,
+    )
+
+    upper_cap = float(TRAFFIC_SEMANTIC_RANGES[COL_SPEED][1])
+    if values is not None and len(values) > 0:
+        lo = float(min(values))
+        hi = float(max(values))
+        return (max(0.0, lo - pad), min(upper_cap, hi + pad))
+    return (
+        max(0.0, TRAFFIC_RUNTIME_SPEED_MIN - pad),
+        min(upper_cap, TRAFFIC_RUNTIME_SPEED_MAX + pad),
+    )
+
+
+def traffic_volume_axis_range(values=None, *, pad_frac: float = 0.05) -> tuple[float, float]:
+    """X-axis domain for traffic-volume density charts (Phase 0 runtime extents)."""
+    from config.data_config import (
+        COL_TRAFFIC_VOL,
+        TRAFFIC_RUNTIME_VOLUME_MAX,
+        TRAFFIC_RUNTIME_VOLUME_MIN,
+        TRAFFIC_SEMANTIC_RANGES,
+    )
+
+    upper_cap = float(TRAFFIC_SEMANTIC_RANGES[COL_TRAFFIC_VOL][1])
+    if values is not None and len(values) > 0:
+        lo = float(min(values))
+        hi = float(max(values))
+        span = max(hi - lo, 1.0)
+        pad = span * pad_frac
+        return (max(0.0, lo - pad), min(upper_cap, hi + pad))
+    pad = (TRAFFIC_RUNTIME_VOLUME_MAX - TRAFFIC_RUNTIME_VOLUME_MIN) * pad_frac
+    return (
+        max(0.0, TRAFFIC_RUNTIME_VOLUME_MIN - pad),
+        min(upper_cap, TRAFFIC_RUNTIME_VOLUME_MAX + pad),
+    )
+
+
+def congestion_axis_range(values=None, *, pad: float = 5.0) -> tuple[float, float]:
+    """Y-axis domain for congestion metrics (0–100 scale with data-aware padding)."""
+    if values is not None and len(values) > 0:
+        lo = float(min(values))
+        hi = float(max(values))
+        y0 = max(0.0, lo - pad)
+        y1 = min(100.0, hi + pad)
+        if y1 - y0 < 15.0:
+            return (0.0, 100.0)
+        return (y0, y1)
+    return (0.0, 100.0)
+
+
 def apply_dashboard_theme(
     fig: go.Figure,
     dashboard: str = "traffic",
     role: str = "supporting",
     show_legend: bool | None = None,
+    *,
+    chart_type: str = "default",
+    normalize: bool = False,
 ) -> go.Figure:
+    from utils.plotly_layout import normalize_figure_for_display, strip_figure_height
+
     tokens = get_dashboard_tokens(dashboard)
     layout = get_base_layout(dashboard)
+    layout.pop("height", None)
     fig.update_layout(**layout)
     legend_visible = show_legend if show_legend is not None else (role == "hero")
     fig.update_layout(
@@ -85,6 +151,8 @@ def apply_dashboard_theme(
             borderwidth=0,
             font=dict(size=11, color=tokens["text_muted"]),
         ),
+        height=None,
+        autosize=True,
     )
     fig.update_xaxes(
         gridcolor=tokens["border_2"],
@@ -100,6 +168,15 @@ def apply_dashboard_theme(
         showline=True,
         linecolor=tokens["border"],
     )
+    strip_figure_height(fig)
+    if normalize:
+        normalize_figure_for_display(
+            fig,
+            dashboard=dashboard,
+            chart_type=chart_type,
+            role=role,
+            show_legend=legend_visible,
+        )
     return fig
 
 
