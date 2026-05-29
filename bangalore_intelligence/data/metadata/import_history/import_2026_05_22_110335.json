@@ -1,0 +1,254 @@
+{
+  "schema_version": "1.0.0",
+  "mode": "apply",
+  "success": true,
+  "import_timestamp": "2026-05-22T11:03:35Z",
+  "traffic": {
+    "dataset": "traffic",
+    "row_count": 12,
+    "column_count": 16,
+    "columns": [
+      "Date",
+      "Area Name",
+      "Road Name",
+      "Congestion_Level",
+      "Average_Speed",
+      "Incident_Reports",
+      "Road_Capacity_Utilization",
+      "Pedestrian_and_Cyclist_Count",
+      "Public_Transport_Usage",
+      "Traffic_Signal_Compliance",
+      "Traffic_Volume",
+      "Weather_Condition",
+      "Roadwork_Activity",
+      "Travel_Time_Index",
+      "Environmental_Impact",
+      "Parking_Usage"
+    ],
+    "date_min": "2022-01-01",
+    "date_max": "2022-01-12",
+    "has_Travel_Time_Index": true,
+    "has_Environmental_Impact": true,
+    "has_Parking_Usage": true
+  },
+  "aqi": {
+    "dataset": "aqi",
+    "row_count": 32,
+    "column_count": 10,
+    "columns": [
+      "Date",
+      "PM_2_5",
+      "T",
+      "Tm",
+      "TM",
+      "SLP",
+      "H",
+      "VV",
+      "V",
+      "VM"
+    ],
+    "date_min": "2021-01-01",
+    "date_max": "2021-02-01",
+    "pm25_non_null": 32
+  },
+  "aqi_preclean": {
+    "rows_read": 32,
+    "blank_rows_dropped": 0,
+    "missing_pm25_dropped": 0
+  },
+  "traffic_duplicate_governance": {
+    "policy": "aggregate_daily_canonical",
+    "duplicate_key_columns": [
+      "Date",
+      "Area Name",
+      "Road Name"
+    ],
+    "rows_before": 12,
+    "duplicate_key_rows_before": 0,
+    "duplicate_groups_before": 0,
+    "exact_duplicates_removed": 0,
+    "partial_groups_aggregated": 0,
+    "rows_collapsed_by_aggregation": 0,
+    "rows_after": 12
+  },
+  "traffic_source_path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-50\\test_loader_prefers_canonical_0\\traffic.csv",
+  "aqi_source_path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-50\\test_loader_prefers_canonical_0\\aqi.csv",
+  "source_metadata": {
+    "traffic": {
+      "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-50\\test_loader_prefers_canonical_0\\traffic.csv",
+      "size_bytes": 1282,
+      "sha256": "ee178fb9acdf3ad2dac861366441cbf64ad2a3448aee15931e384593083dda93"
+    },
+    "aqi": {
+      "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-50\\test_loader_prefers_canonical_0\\aqi.csv",
+      "size_bytes": 1827,
+      "sha256": "d182999cf4a4d8b3315894d578c845eb9eb6579086ff518dd6ff97721fbf9ecc"
+    }
+  },
+  "raw_validation": {
+    "traffic": {
+      "dataset": "traffic",
+      "findings": [],
+      "severity_counts": {
+        "INFO": 0,
+        "WARNING": 0,
+        "ERROR": 0,
+        "CRITICAL": 0
+      },
+      "duplicate_count": 0,
+      "null_stats": {
+        "null_counts": {
+          "Date": 0,
+          "Area Name": 0,
+          "Road Name": 0,
+          "Congestion_Level": 0,
+          "Average_Speed": 0,
+          "Incident_Reports": 0,
+          "Road_Capacity_Utilization": 0,
+          "Pedestrian_and_Cyclist_Count": 0,
+          "Public_Transport_Usage": 0,
+          "Traffic_Signal_Compliance": 0,
+          "Traffic_Volume": 0,
+          "Weather_Condition": 0,
+          "Roadwork_Activity": 12
+        },
+        "incident_policy": {
+          "incident_null_count": 0,
+          "incident_null_ratio": 0.0,
+          "incident_fill_allowed": true
+        }
+      },
+      "source_metadata": {
+        "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-50\\test_loader_prefers_canonical_0\\traffic.csv",
+        "size_bytes": 1282,
+        "sha256": "ee178fb9acdf3ad2dac861366441cbf64ad2a3448aee15931e384593083dda93"
+      },
+      "has_blocking_findings": false
+    },
+    "aqi": {
+      "dataset": "aqi",
+      "findings": [],
+      "severity_counts": {
+        "INFO": 0,
+        "WARNING": 0,
+        "ERROR": 0,
+        "CRITICAL": 0
+      },
+      "duplicate_count": 0,
+      "null_stats": {
+        "null_counts": {
+          "Date": 0,
+          "PM_2_5": 0,
+          "T": 0,
+          "Tm": 0,
+          "TM": 0,
+          "SLP": 0,
+          "H": 0,
+          "VV": 0,
+          "V": 0,
+          "VM": 0
+        },
+        "pm25_interpolation": "forbidden"
+      },
+      "source_metadata": {
+        "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-50\\test_loader_prefers_canonical_0\\aqi.csv",
+        "size_bytes": 1827,
+        "sha256": "d182999cf4a4d8b3315894d578c845eb9eb6579086ff518dd6ff97721fbf9ecc"
+      },
+      "has_blocking_findings": false
+    },
+    "severity_totals": {
+      "INFO": 0,
+      "WARNING": 0,
+      "ERROR": 0,
+      "CRITICAL": 0
+    }
+  },
+  "processed_validation": {
+    "traffic": {
+      "dataset": "traffic",
+      "findings": [],
+      "severity_counts": {
+        "INFO": 0,
+        "WARNING": 0,
+        "ERROR": 0,
+        "CRITICAL": 0
+      },
+      "has_blocking_findings": false,
+      "ok": true
+    },
+    "aqi": {
+      "dataset": "aqi",
+      "findings": [],
+      "severity_counts": {
+        "INFO": 0,
+        "WARNING": 0,
+        "ERROR": 0,
+        "CRITICAL": 0
+      },
+      "has_blocking_findings": false,
+      "ok": true
+    },
+    "severity_totals": {
+      "INFO": 0,
+      "WARNING": 0,
+      "ERROR": 0,
+      "CRITICAL": 0
+    }
+  },
+  "timings": {
+    "normalization_time": 0.0148,
+    "validation_time": 0.0078,
+    "cleaning_time": 0.0061,
+    "parquet_write_time": 0.0499,
+    "total_import_time": 0.0746
+  },
+  "processed_metadata": {
+    "traffic": {
+      "row_count": 12,
+      "derived_column_count": 4,
+      "parquet_size_bytes": 13157,
+      "generated_at": "2026-05-22T11:03:35Z"
+    },
+    "aqi": {
+      "row_count": 32,
+      "derived_column_count": 10,
+      "parquet_size_bytes": 11954,
+      "generated_at": "2026-05-22T11:03:35Z"
+    }
+  },
+  "freshness_metadata": {
+    "traffic": {
+      "source_last_date": "2022-01-12",
+      "processed_last_date": "2022-01-12",
+      "days_since_latest_record": 1591
+    },
+    "aqi": {
+      "source_last_date": "2021-02-01",
+      "processed_last_date": "2021-02-01",
+      "days_since_latest_record": 1936
+    }
+  },
+  "governance": {
+    "lock": {
+      "pid": 2960,
+      "started_at": "2026-05-22T11:03:35Z",
+      "started_at_unix": 1779447815.16583
+    },
+    "snapshots": {
+      "traffic_snapshot": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\archive\\traffic_raw_2026_05_22_110335.parquet",
+      "aqi_snapshot": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\archive\\aqi_raw_2026_05_22_110335.parquet",
+      "traffic_snapshots_removed": [],
+      "aqi_snapshots_removed": []
+    },
+    "profile_path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\metadata\\import_profile.json",
+    "history_path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\metadata\\import_history\\import_2026_05_22_110335.json"
+  },
+  "artifacts_written": [
+    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-50\\test_loader_prefers_canonical_0\\raw\\traffic_canonical_raw.parquet",
+    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-50\\test_loader_prefers_canonical_0\\raw\\aqi_canonical_raw.parquet",
+    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-50\\test_loader_prefers_canonical_0\\processed\\traffic_clean.parquet",
+    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-50\\test_loader_prefers_canonical_0\\processed\\aqi_clean.parquet"
+  ],
+  "error": ""
+}

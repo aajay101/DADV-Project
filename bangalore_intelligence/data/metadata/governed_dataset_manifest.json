@@ -1,0 +1,311 @@
+{
+  "datasets": {
+    "aqi": {
+      "canonical": {
+        "column_count": 10,
+        "columns": [
+          "Date",
+          "PM_2_5",
+          "T",
+          "Tm",
+          "TM",
+          "SLP",
+          "H",
+          "VV",
+          "V",
+          "VM"
+        ],
+        "dataset": "aqi",
+        "date_range": {
+          "max": "2023-12-31",
+          "min": "2021-01-01"
+        },
+        "file_sha256": "499458866a7f839fe41a4ed0fd66feef1d51b930bfe2126607827b33a0165dcc",
+        "modified_utc": "2026-05-21T17:04:03.297086+00:00",
+        "numeric_ranges": {
+          "H": {
+            "max": 95.0,
+            "min": 35.1
+          },
+          "PM_2_5": {
+            "max": 140.0,
+            "min": 8.0
+          },
+          "SLP": {
+            "max": 1032.6,
+            "min": 985.3
+          },
+          "T": {
+            "max": 40.7,
+            "min": 12.2
+          },
+          "TM": {
+            "max": 40.7,
+            "min": 12.2
+          },
+          "Tm": {
+            "max": 31.9,
+            "min": 8.0
+          },
+          "V": {
+            "max": 5.83,
+            "min": 0.1
+          },
+          "VM": {
+            "max": 10.16,
+            "min": 0.5
+          },
+          "VV": {
+            "max": 6.88,
+            "min": 0.2
+          }
+        },
+        "path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\raw\\aqi_canonical_raw.parquet",
+        "row_count": 1095,
+        "schema_hash": "62444cad6bf0719d8749ad06ff62fb687805bad85762bcdbca520ec7064c7558"
+      },
+      "governance_status": "PASS",
+      "origin": "governed_canonical_parquet",
+      "processed": {
+        "column_count": 20,
+        "columns": [
+          "Date",
+          "PM_2_5",
+          "T",
+          "Tm",
+          "TM",
+          "SLP",
+          "H",
+          "VV",
+          "V",
+          "VM",
+          "aqi_category",
+          "season",
+          "temp_spread",
+          "gust_ratio",
+          "slp_band",
+          "vv_band",
+          "wind_band",
+          "rolling_7d_pm25",
+          "year",
+          "week"
+        ],
+        "dataset": "aqi",
+        "date_range": {
+          "max": "2023-12-31",
+          "min": "2021-01-01"
+        },
+        "file_sha256": "03fdc2393cc82c9053358655fb191107ee58fc28bdfa7f94997a89b514eca95f",
+        "modified_utc": "2026-05-21T17:04:03.354348+00:00",
+        "numeric_ranges": {
+          "H": {
+            "max": 95.0,
+            "min": 35.1
+          },
+          "PM_2_5": {
+            "max": 140.0,
+            "min": 8.0
+          },
+          "SLP": {
+            "max": 1032.6,
+            "min": 985.3
+          },
+          "T": {
+            "max": 40.7,
+            "min": 12.2
+          },
+          "TM": {
+            "max": 40.7,
+            "min": 12.2
+          },
+          "Tm": {
+            "max": 31.9,
+            "min": 8.0
+          },
+          "V": {
+            "max": 5.83,
+            "min": 0.1
+          },
+          "VM": {
+            "max": 10.16,
+            "min": 0.5
+          },
+          "VV": {
+            "max": 6.88,
+            "min": 0.2
+          },
+          "gust_ratio": {
+            "max": 80.6,
+            "min": 0.12
+          },
+          "rolling_7d_pm25": {
+            "max": 104.7,
+            "min": 12.0
+          },
+          "temp_spread": {
+            "max": 12.0,
+            "min": 4.0
+          },
+          "week": {
+            "max": 53.0,
+            "min": 1.0
+          },
+          "year": {
+            "max": 2023.0,
+            "min": 2021.0
+          }
+        },
+        "path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\processed\\aqi_clean.parquet",
+        "row_count": 1095,
+        "schema_hash": "f77e030a3bd8f8314061c76729ba92a01a9c8847887ff54441a954602adcbad4",
+        "unique_categories": 5
+      },
+      "validated_at_utc": "2026-05-22T08:40:13.901821+00:00"
+    },
+    "traffic": {
+      "canonical": {
+        "column_count": 13,
+        "columns": [
+          "Date",
+          "Area Name",
+          "Road Name",
+          "Congestion_Level",
+          "Average_Speed",
+          "Incident_Reports",
+          "Road_Capacity_Utilization",
+          "Pedestrian_and_Cyclist_Count",
+          "Public_Transport_Usage",
+          "Traffic_Signal_Compliance",
+          "Traffic_Volume",
+          "Weather_Condition",
+          "Roadwork_Activity"
+        ],
+        "dataset": "traffic",
+        "date_range": {
+          "max": "2024-08-17",
+          "min": "2022-01-01"
+        },
+        "file_sha256": "8ca05e3880a224c73dfd9d9405e649e150c326cbc25ee17e225bf58a1a120b2a",
+        "modified_utc": "2026-05-21T17:04:03.291838+00:00",
+        "numeric_ranges": {
+          "Average_Speed": {
+            "max": 40.8,
+            "min": 8.0
+          },
+          "Congestion_Level": {
+            "max": 99.0,
+            "min": 35.0
+          },
+          "Incident_Reports": {
+            "max": 6.0,
+            "min": 0.0
+          },
+          "Pedestrian_and_Cyclist_Count": {
+            "max": 249.0,
+            "min": 50.0
+          },
+          "Public_Transport_Usage": {
+            "max": 75.0,
+            "min": 30.0
+          },
+          "Road_Capacity_Utilization": {
+            "max": 100.0,
+            "min": 50.0
+          },
+          "Traffic_Signal_Compliance": {
+            "max": 95.0,
+            "min": 60.0
+          },
+          "Traffic_Volume": {
+            "max": 4996.0,
+            "min": 501.0
+          }
+        },
+        "path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\raw\\traffic_canonical_raw.parquet",
+        "row_count": 8579,
+        "schema_hash": "f3dc782e7ee9a5d47889dc3f76a392524101feb55d8da6f4aef508ace8168b0a",
+        "unique_areas": 8,
+        "unique_roads": 16
+      },
+      "governance_status": "PASS",
+      "origin": "governed_canonical_parquet",
+      "processed": {
+        "column_count": 17,
+        "columns": [
+          "Date",
+          "Area Name",
+          "Road Name",
+          "Congestion_Level",
+          "Average_Speed",
+          "Incident_Reports",
+          "Road_Capacity_Utilization",
+          "Pedestrian_and_Cyclist_Count",
+          "Public_Transport_Usage",
+          "Traffic_Signal_Compliance",
+          "Traffic_Volume",
+          "Weather_Condition",
+          "Roadwork_Activity",
+          "day_of_week",
+          "month_year",
+          "at_max_capacity",
+          "environmental_impact"
+        ],
+        "dataset": "traffic",
+        "date_range": {
+          "max": "2024-08-17",
+          "min": "2022-01-01"
+        },
+        "file_sha256": "888a217415c8fb03a7919cf5003b20a9aac4baaa09645d3718c2e38ca36e5011",
+        "modified_utc": "2026-05-21T17:04:03.347260+00:00",
+        "numeric_ranges": {
+          "Average_Speed": {
+            "max": 40.8,
+            "min": 8.0
+          },
+          "Congestion_Level": {
+            "max": 99.0,
+            "min": 35.0
+          },
+          "Incident_Reports": {
+            "max": 6.0,
+            "min": 0.0
+          },
+          "Pedestrian_and_Cyclist_Count": {
+            "max": 249.0,
+            "min": 50.0
+          },
+          "Public_Transport_Usage": {
+            "max": 75.0,
+            "min": 30.0
+          },
+          "Road_Capacity_Utilization": {
+            "max": 100.0,
+            "min": 50.0
+          },
+          "Traffic_Signal_Compliance": {
+            "max": 95.0,
+            "min": 60.0
+          },
+          "Traffic_Volume": {
+            "max": 4996.0,
+            "min": 501.0
+          },
+          "environmental_impact": {
+            "max": 99.4,
+            "min": 41.0
+          }
+        },
+        "path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\processed\\traffic_clean.parquet",
+        "row_count": 8579,
+        "schema_hash": "c8c272479268301b3f29501691edbd2fdf82b8e7d08ca9697629da85bda25c34",
+        "unique_areas": 8,
+        "unique_roads": 16
+      },
+      "validated_at_utc": "2026-05-22T08:40:13.876224+00:00"
+    }
+  },
+  "generated_at_utc": "2026-05-22T08:40:13.825903+00:00",
+  "runtime_env": "prod",
+  "schema_version": "phase0.1",
+  "synthetic_bootstrap_allowed": false
+}
