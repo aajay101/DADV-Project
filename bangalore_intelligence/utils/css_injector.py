@@ -7,21 +7,23 @@ from config.theme import FONT_FAMILY, get_dashboard_tokens
 
 
 def inject_platform_css(dashboard: str = "traffic") -> None:
-    """Inject once per session; dashboard switches accent variables."""
-    if st.session_state.get("_buip_css_injected"):
-        return
+    """Inject the static platform stylesheet on every Streamlit run."""
 
     tokens = get_dashboard_tokens(dashboard)
-    accent = tokens["accent"]
-    bg = tokens["bg"]
-    surface = tokens["surface"]
-    surface_2 = tokens["surface_2"]
-    surface_3 = tokens["surface_3"]
-    border = tokens["border"]
-    border_hover = tokens["border_hover"]
-    text_primary = tokens["text_primary"]
-    text_muted = tokens["text_muted"]
-    shimmer_mid = tokens["surface_4"]
+    accent = "var(--buip-accent)"
+    accent_soft = "var(--buip-accent-soft)"
+    bg = "var(--buip-bg)"
+    surface = "var(--buip-surface)"
+    surface_2 = "var(--buip-surface-2)"
+    surface_3 = "var(--buip-surface-3)"
+    surface_4 = "var(--buip-surface-4)"
+    border = "var(--buip-border)"
+    border_hover = "var(--buip-border-hover)"
+    text_primary = "var(--buip-text)"
+    text_muted = "var(--buip-muted)"
+    severity_warning = "var(--buip-severity-warning)"
+    severity_warning_bg = "var(--buip-severity-warning-bg)"
+    severity_warning_border = "var(--buip-severity-warning-border)"
 
     css = f"""
     <style>
@@ -83,7 +85,7 @@ def inject_platform_css(dashboard: str = "traffic") -> None:
         50% {{ opacity: 0.85; }}
     }}
     .buip-skeleton {{
-        background: linear-gradient(90deg, {surface_2} 0%, {shimmer_mid} 42%, {surface_2} 84%);
+        background: linear-gradient(90deg, {surface_2} 0%, {surface_4} 42%, {surface_2} 84%);
         background-size: 960px 100%;
         animation: buip-shimmer 1.6s ease-in-out infinite;
         border-radius: 4px;
@@ -97,11 +99,17 @@ def inject_platform_css(dashboard: str = "traffic") -> None:
     }}
 
     .buip-kpi-card {{
+        border: 1px solid rgba(255, 210, 80, 0.90) !important;
+        box-shadow:
+            0 0 6px rgba(255,220,80,0.95),
+            0 0 20px rgba(255,185,40,0.70),
+            0 0 45px rgba(230,150,20,0.40),
+            0 0 80px rgba(200,120,10,0.18) !important;
         transition: background 150ms ease, border-color 150ms ease;
     }}
     .buip-kpi-card:hover {{
         background: {surface_2} !important;
-        border-color: {border_hover} !important;
+        border-color: rgba(255, 210, 80, 1) !important;
     }}
     div[data-testid="stHorizontalBlock"]:has(.buip-kpi-card) {{
         gap: 0.65rem;
@@ -134,15 +142,18 @@ def inject_platform_css(dashboard: str = "traffic") -> None:
 
     .buip-chart-title {{
         font-family: {FONT_FAMILY};
+        font-size: 16px;
+        font-weight: 600;
         line-height: 1.4;
+        text-align: center;
     }}
     .buip-chart-title--hero {{
         font-size: 16px;
         font-weight: 600;
     }}
     .buip-chart-title--support {{
-        font-size: 14px;
-        font-weight: 500;
+        font-size: 16px;
+        font-weight: 600;
     }}
     .buip-selection-pill {{
         display: inline-block;
@@ -150,9 +161,9 @@ def inject_platform_css(dashboard: str = "traffic") -> None:
         font-weight: 600;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        color: {tokens['severity_warning']};
-        background: {tokens['severity_warning']}22;
-        border: 1px solid {tokens['severity_warning']}44;
+        color: {severity_warning};
+        background: {severity_warning_bg};
+        border: 1px solid {severity_warning_border};
         border-radius: 8px;
         padding: 4px 10px;
         line-height: 1.35;
@@ -162,6 +173,7 @@ def inject_platform_css(dashboard: str = "traffic") -> None:
     }}
     .buip-chart-module-header {{
         margin-bottom: 0;
+        text-align: center;
     }}
     .buip-chart-plot-wrap {{
         width: 100%;
@@ -176,6 +188,7 @@ def inject_platform_css(dashboard: str = "traffic") -> None:
     .buip-chart-footer {{
         max-width: 100%;
         overflow-wrap: anywhere;
+        text-align: center;
     }}
     .buip-fs-controls-row,
     div[data-testid="stHorizontalBlock"]:has(button[kind="primary"]) {{
@@ -227,7 +240,7 @@ def inject_platform_css(dashboard: str = "traffic") -> None:
         transition: all 150ms ease;
     }}
     .buip-nav-card:hover {{
-        border-color: {accent}66 !important;
+        border-color: {accent_soft} !important;
         background: {surface_2} !important;
     }}
 
@@ -334,20 +347,31 @@ def inject_platform_css(dashboard: str = "traffic") -> None:
         * {{
             transition-duration: 0.01ms !important;
         }}
+        .js-plotly-plot,
+        .js-plotly-plot * {{
+            transition: none !important;
+        }}
     }}
 
     :root {{
-        --buip-accent: {accent};
-        --buip-bg: {bg};
-        --buip-surface: {surface};
-        --buip-border: {border};
-        --buip-text: {text_primary};
-        --buip-muted: {text_muted};
+        --buip-accent: {tokens['accent']};
+        --buip-accent-soft: {tokens['accent']}66;
+        --buip-bg: {tokens['bg']};
+        --buip-surface: {tokens['surface']};
+        --buip-surface-2: {tokens['surface_2']};
+        --buip-surface-3: {tokens['surface_3']};
+        --buip-surface-4: {tokens['surface_4']};
+        --buip-border: {tokens['border']};
+        --buip-border-hover: {tokens['border_hover']};
+        --buip-text: {tokens['text_primary']};
+        --buip-muted: {tokens['text_muted']};
+        --buip-severity-warning: {tokens['severity_warning']};
+        --buip-severity-warning-bg: {tokens['severity_warning']}22;
+        --buip-severity-warning-border: {tokens['severity_warning']}44;
     }}
     </style>
     """
     st.markdown(css, unsafe_allow_html=True)
-    st.session_state["_buip_css_injected"] = True
 
 
 def inject_dashboard_accent(dashboard: str) -> None:
@@ -359,7 +383,19 @@ def inject_dashboard_accent(dashboard: str) -> None:
         <style>
         :root {{
             --buip-accent: {tokens['accent']};
+            --buip-accent-soft: {tokens['accent']}66;
             --buip-bg: {tokens['bg']};
+            --buip-surface: {tokens['surface']};
+            --buip-surface-2: {tokens['surface_2']};
+            --buip-surface-3: {tokens['surface_3']};
+            --buip-surface-4: {tokens['surface_4']};
+            --buip-border: {tokens['border']};
+            --buip-border-hover: {tokens['border_hover']};
+            --buip-text: {tokens['text_primary']};
+            --buip-muted: {tokens['text_muted']};
+            --buip-severity-warning: {tokens['severity_warning']};
+            --buip-severity-warning-bg: {tokens['severity_warning']}22;
+            --buip-severity-warning-border: {tokens['severity_warning']}44;
         }}
         .stApp {{ background-color: {tokens['bg']}; }}
         .buip-skeleton {{
@@ -368,6 +404,28 @@ def inject_dashboard_accent(dashboard: str) -> None:
         .buip-chart-shell--hero {{
             background: {tokens['surface_3']} !important;
             border-color: {tokens['border_hover']} !important;
+        }}
+        .buip-analytical-modules-panel-marker {{
+            display: none;
+        }}
+        div[data-testid="stLayoutWrapper"]:has(.buip-analytical-modules-panel-marker) > div[data-testid="stVerticalBlock"] {{
+            position: relative;
+            border: 1px solid rgba(210, 228, 255, 0.80);
+            box-shadow:
+                0 0 6px rgba(220, 232, 255, 0.95),
+                0 0 20px rgba(195, 215, 255, 0.70),
+                0 0 45px rgba(160, 190, 250, 0.40),
+                0 0 80px rgba(120, 160, 235, 0.18);
+            overflow: visible !important;
+        }}
+        div[data-testid="stLayoutWrapper"]:has(.buip-analytical-modules-panel-marker) > div[data-testid="stVerticalBlock"]::before {{
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow:
+                inset 0 0 0 1px rgba(255,255,255,.06);
+            pointer-events: none;
         }}
         </style>
         """,

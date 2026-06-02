@@ -16,7 +16,7 @@ TRAFFIC_TABS = [
     },
     {
         "index": 1,
-        "label": "02 · Temporal",
+        "label": "02 · Time",
         "module": "p2_temporal_intelligence",
         "title": "Temporal Patterns",
         "subtitle": "P2 of 6 · Monthly and weekday congestion rhythms by area",
@@ -24,7 +24,7 @@ TRAFFIC_TABS = [
     },
     {
         "index": 2,
-        "label": "03 · Spatial",
+        "label": "03 · Areas",
         "module": "p3_spatial_operations",
         "title": "Road And Area Diagnostics",
         "subtitle": "P3 of 6 · Road and area stress compared on congestion and capacity",
@@ -32,7 +32,7 @@ TRAFFIC_TABS = [
     },
     {
         "index": 3,
-        "label": "04 · Threshold",
+        "label": "04 · Limits",
         "module": "p4_threshold_analytics",
         "title": "Speed And Service Thresholds",
         "subtitle": "P4 of 6 · Speed decline and service threshold boundaries",

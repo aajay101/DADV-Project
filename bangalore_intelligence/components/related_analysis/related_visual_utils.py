@@ -31,7 +31,7 @@ class RelatedVisual:
 
 
 _VISUAL_TITLE_FALLBACKS: dict[str, str] = {
-    "T-02": "Parallel Coordinates Matrix",
+    "T-02": "Area Traffic Profile",
     "T-05": "Road Management Priority Quadrant",
     "T-07": "Pedestrian-Adjusted Road Pressure",
     "T-08": "Incident Impact On Congestion",

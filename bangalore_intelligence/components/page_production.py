@@ -31,7 +31,7 @@ from filters.interaction import render_investigation_chrome
 from data_layer.lazy_charts import lazy_cache_key, resolve_chart_fig
 from config.spacing import SECTION_GAP_SM
 from utils.formatters import filter_snapshot_from_state
-from utils.ui_blocks import render_spacer
+from utils.ui_blocks import render_html_block, render_spacer
 
 
 def _enrich_chart_slot(slot: dict | None, role: str) -> dict:
@@ -200,6 +200,9 @@ def render_production_page(
 
     investigation_zone_open(dashboard)
     with st.container(border=True):
+        render_html_block(
+            '<span class="buip-analytical-modules-panel-marker" aria-hidden="true"></span>'
+        )
         section_header(
             "Analytical Modules",
             zone="investigation",
@@ -299,7 +302,7 @@ def render_production_page(
         with support_col:
             if collapse_support:
                 collapsible_section(
-                    label="▶ T-02 · Parallel coordinates (tablet layout)",
+                    label="▶ T-02 · Area Traffic Profile (tablet layout)",
                     key=f"{page_key}_support_collapsed",
                     default_expanded=False,
                     content_fn=_render_support_chart,
@@ -316,7 +319,6 @@ def render_production_page(
             st.divider()
             section_header(
                 "Extended Analysis",
-                subtitle="Additional charts for this page tier",
                 zone="investigation",
                 dashboard=dashboard,
             )

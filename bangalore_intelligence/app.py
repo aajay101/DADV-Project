@@ -87,8 +87,6 @@ if selected_key != st.session_state.get("active_dashboard"):
     from filters.transitions import DashboardChanged, dispatch, request_rerun
 
     result = dispatch(DashboardChanged(dashboard=selected_key))
-    inject_platform_css(selected_key)
-    inject_dashboard_accent(selected_key)
     request_rerun(result, source="dashboard_switcher")
 
 if st.session_state["active_dashboard"] == "traffic":

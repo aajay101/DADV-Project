@@ -16,6 +16,7 @@ WEEK_ORDER = [
     "Saturday",
     "Sunday",
 ]
+WEEK_TICK_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 
 def render(data, config=None):
@@ -62,6 +63,14 @@ def render(data, config=None):
     fig.update_layout(
         xaxis_title="Day of Week",
         yaxis_title="Congestion Index",
+        xaxis=dict(
+            categoryorder="array",
+            categoryarray=WEEK_ORDER,
+            tickmode="array",
+            tickvals=WEEK_ORDER,
+            ticktext=WEEK_TICK_LABELS,
+            automargin=True,
+        ),
         yaxis=dict(range=[0, 100]),
         margin=dict(l=48, r=24, t=16, b=56),
     )

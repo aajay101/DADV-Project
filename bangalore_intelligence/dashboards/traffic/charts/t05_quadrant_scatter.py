@@ -87,11 +87,24 @@ def render(data, config=None):
     add_quadrant_zone_labels(fig, x_mid, y_mid, dashboard)
 
     fig.update_layout(
-        xaxis_title="Road Capacity Utilization (%)",
-        yaxis_title="Mean Congestion Index",
+        xaxis_title="Road Usage (%)",
+        yaxis_title="Traffic Level",
         xaxis=dict(range=[0, 105]),
         yaxis=dict(range=[0, 105]),
     )
+    zone_label_map = {
+        "Operational Baseline": "Normal Traffic",
+        "Constrained Flow": "Heavy Traffic",
+        "Capacity Margin": "Spare Capacity",
+        "Critical Overload": "Severe Congestion",
+        "OPERATIONAL BASELINE": "NORMAL TRAFFIC",
+        "CONSTRAINED FLOW": "HEAVY TRAFFIC",
+        "CAPACITY MARGIN": "SPARE CAPACITY",
+        "CRITICAL OVERLOAD": "SEVERE CONGESTION",
+    }
+    for annotation in fig.layout.annotations or []:
+        if annotation.text in zone_label_map:
+            annotation.text = zone_label_map[annotation.text]
     return apply_dashboard_theme(
         fig,
         dashboard,

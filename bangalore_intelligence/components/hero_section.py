@@ -1,4 +1,4 @@
-"""Page hero — Command Zone anchor."""
+"""Page hero - Command Zone anchor."""
 
 from config.spacing import (
     HERO_BADGE_GAP,
@@ -10,7 +10,7 @@ from config.spacing import (
 )
 from config.typography import TYPE_CAPTION, TYPE_HERO_TITLE, css_from_type
 from config.theme import RADIUS_LG, get_dashboard_tokens
-from utils.html_styles import join_styles, left_accent_bar, pill_badge, styled_div
+from utils.html_styles import join_styles, left_accent_bar, styled_div
 from utils.ui_blocks import escape_text, render_html_block
 
 
@@ -22,21 +22,8 @@ def hero_section(
     page_indicator: str | None = None,
 ) -> None:
     del page_indicator  # reserved for future page chrome
+    del severity_badge
     tokens = get_dashboard_tokens(dashboard)
-    badge_html = ""
-    if severity_badge:
-        sev_color = (
-            tokens["severity_critical"]
-            if severity_badge in ("CRITICAL", "SEVERE")
-            else tokens["severity_warning"]
-        )
-        badge_html = pill_badge(
-            severity_badge,
-            f"{sev_color}33",
-            sev_color,
-            sev_color,
-            inline_gap=HERO_BADGE_GAP,
-        )
 
     subtitle_html = ""
     if subtitle:
@@ -75,16 +62,14 @@ def hero_section(
         "font-weight:600",
         "letter-spacing:0.1em",
         f"color:{tokens['text_muted']}",
-        "text-transform:uppercase",
         "line-height:1.5",
     )
 
     hero_html = (
         f'<div class="buip-hero" style="{container_style}">'
-        f'<div style="{identity_style}">BUIP · {escape_text(tokens["identity_label"])}</div>'
+        f'<div style="{identity_style}">{escape_text(tokens["identity_label"])}</div>'
         f'<div style="{title_row_style}">'
         f'<div style="{title_style}">{escape_text(title)}</div>'
-        f"{badge_html}"
         f"</div>{subtitle_html}</div>"
     )
     render_html_block(hero_html)

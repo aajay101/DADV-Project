@@ -9,8 +9,8 @@ from config.data_config import (
     TRAFFIC_ROADWORK_FILTER_OPTIONS,
     TRAFFIC_WEATHER_OPTIONS,
 )
-from config.typography import TYPE_CAPTION, TYPE_SUBSECTION_TITLE, css_from_type
-from config.theme import RADIUS_LG, SPACING_MD, SPACING_SM, SPACING_XS, get_dashboard_tokens
+from config.typography import TYPE_CAPTION, css_from_type
+from config.theme import SPACING_MD, SPACING_SM, SPACING_XS, get_dashboard_tokens
 from components.layout.responsive import should_show_compact_filter_warning
 from components.interaction_education.filter_scope_explanations import render_filter_scope_hint
 from components.runtime_debug import render_transition_debug_panel
@@ -34,7 +34,7 @@ from filters.state import (
 from filters.interaction_mode import get_interaction_mode, has_active_global_filters
 from filters.transitions import GlobalFilterChanged, dispatch, record_deferred_rerun
 from utils.formatters import filter_snapshot_from_state, fmt_filter_summary
-from utils.html_styles import join_styles, pill_badge, styled_div
+from utils.html_styles import join_styles, styled_div
 from utils.ui_blocks import render_html_block
 
 
@@ -66,40 +66,6 @@ def filter_panel(dashboard: str = "traffic") -> None:
     filters_active = _filters_active(prefix, defaults)
     filter_updating = is_filter_updating(prefix)
     interaction_mode = get_interaction_mode(st.session_state, "traffic" if dashboard == "traffic" else "aqi")
-    strip_classes = "filter-strip buip-filter-strip"
-    if filter_updating:
-        strip_classes += " buip-filter-strip--updating"
-
-    active_badge = pill_badge(
-        "FILTERS ACTIVE",
-        f"{tokens['severity_warning']}33",
-        tokens["severity_warning"],
-        tokens["severity_warning"],
-    ) if filters_active else ""
-
-    strip_title_style = css_from_type(TYPE_SUBSECTION_TITLE, tokens["text_muted"])
-    strip_style = join_styles(
-        "position:sticky",
-        "top:0",
-        "z-index:100",
-        f"background:{tokens['filter_shelf']}",
-        f"border-bottom:1px solid {tokens['border']}",
-        f"padding:{SPACING_MD}px {SPACING_MD}px {SPACING_SM}px",
-        f"margin-bottom:{SPACING_MD}px",
-        f"border-radius:{RADIUS_LG}px {RADIUS_LG}px 0 0",
-    )
-    strip_row = join_styles(
-        "display:flex",
-        "justify-content:space-between",
-        "align-items:center",
-    )
-    strip_html = (
-        f'<div class="{strip_classes}" style="{strip_style}">'
-        f'<div style="{strip_row}">'
-        f'<span style="{strip_title_style}">Global filters</span>'
-        f"<span>{active_badge}</span></div></div>"
-    )
-    render_html_block(strip_html)
 
     if should_show_compact_filter_warning():
         st.warning(

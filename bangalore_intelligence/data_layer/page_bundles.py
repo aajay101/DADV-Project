@@ -378,7 +378,7 @@ def build_traffic_lab_bundle(state: dict) -> dict:
             "chart_id": "T-02",
             "interactive": True,
             "interaction_meta": {"parcoords_areas": parcoords[COL_AREA].tolist()},
-            "title": "T-02 · Parallel Coordinates Matrix",
+                "title": "T-02 · Area Traffic Profile",
             "subtitle": "Eight-axis area performance profile",
             "caption": "Area-level z-score profile · open fullscreen for sampled record-level parcoords.",
             "fig": t02_parallel_coords.render(

@@ -3,7 +3,7 @@
 from components.explainability.explainability_trigger import render_explainability_trigger
 from components.explainability.explainability_utils import kpi_entry
 from components.loading_state import kpi_skeleton
-from components.states import border_for_state, opacity_for_state
+from components.states import opacity_for_state
 from config.spacing import KPI_CARD_MIN_HEIGHT, KPI_LABEL_TO_VALUE, KPI_VALUE_LINE_HEIGHT
 from config.typography import TYPE_KPI_LABEL, TYPE_KPI_VALUE, TYPE_KPI_VALUE_COMPACT, TYPE_KPI_VALUE_LARGE, css_from_type
 from config.theme import FONT_MONO, RADIUS_LG, SPACING_MD, SPACING_SM, get_dashboard_tokens, get_severity_colors
@@ -59,7 +59,6 @@ def kpi_card(
         "display:block",
         "overflow-wrap:anywhere",
     )
-    border = border_for_state(state, tokens)
     opacity = opacity_for_state(state)
 
     note_html = ""
@@ -102,14 +101,12 @@ def kpi_card(
     if gauge_percent is not None and size != "compact":
         gauge_html = _gauge_svg(gauge_percent, value_color, tokens["border"])
 
-    left_border = ""
-    if severity in ("critical", "warning"):
-        left_border = f"border-left:3px solid {value_color};"
+    display_value = str(value)
+    if str(label).strip().lower() == "trend direction":
+        display_value = display_value.lstrip("→↗↘↑↓ ").removeprefix("->").strip()
 
     card_style = join_styles(
         f"background:{tokens['surface']}",
-        border,
-        left_border,
         f"border-radius:{RADIUS_LG}px",
         f"padding:{SPACING_MD + 4}px {SPACING_MD}px",
         f"min-height:{KPI_CARD_MIN_HEIGHT}px",
@@ -139,7 +136,7 @@ def kpi_card(
         f'<div class="buip-kpi-card" style="{card_style}">'
         f'<div style="flex:1;min-width:0;">'
         f'<div style="{label_row_style}">{icon_html}<span>{escape_text(label)}</span> {badge_html}</div>'
-        f'<div style="{value_block_style}">{escape_text(value)}</div>'
+        f'<div style="{value_block_style}">{escape_text(display_value)}</div>'
         f"{note_html}{delta_html}</div>{gauge_html}</div>"
     )
     render_html_block(html)

@@ -710,8 +710,6 @@ def render_investigation_chrome(bundle: dict, dashboard: DashboardId, page_key: 
 
         with c2:
 
-            render_clear_focus_hint()
-
             if st.button("× Clear focus", key=f"clear_focus_{dashboard}_{page_key}"):
 
                 result = clear_investigation(dashboard)
@@ -722,12 +720,7 @@ def render_investigation_chrome(bundle: dict, dashboard: DashboardId, page_key: 
 
             if meta.get("has_investigation"):
 
-                render_overlay_hint(st.session_state, dashboard)
-
-                if dashboard == "aqi":
-                    st.caption("Local investigation overlay; global filters remain separate.")
-                else:
-                    st.caption("Investigation overlay only; global filters remain unchanged.")
+                pass
             else:
                 render_chart_interaction_mode_hint(st.session_state, dashboard)
 
@@ -830,5 +823,3 @@ def process_plotly_selection(
         st.session_state["_chart_sel_sig"] = sig
 
         request_rerun_for_last_transition(source=f"plotly_selection_{chart_id}")
-
-

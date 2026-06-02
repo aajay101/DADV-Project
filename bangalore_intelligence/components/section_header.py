@@ -43,6 +43,7 @@ def section_header(
         "display:flex",
         "flex-wrap:wrap",
         "align-items:center",
+        "justify-content:center" if title in ("Analytical Modules", "Extended Analysis") else "",
         "gap:10px",
         "line-height:1.45",
     )

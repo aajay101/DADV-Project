@@ -459,8 +459,6 @@ def reduce_runtime_state(action: FullscreenChanged | DashboardChanged | ActiveTa
     changes.update(_set("active_dashboard", action.dashboard))
     changes.update(_set("fullscreen_chart_key", None))
     changes.update(_set("fullscreen_dashboard", None))
-    st.session_state["_buip_css_injected"] = False
-    changes["_buip_css_injected"] = False
     return TransitionResult(
         action_type="DashboardChanged",
         dashboard=action.dashboard,

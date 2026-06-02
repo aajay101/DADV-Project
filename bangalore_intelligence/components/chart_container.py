@@ -28,7 +28,7 @@ from filters.fullscreen import (
     is_fullscreen_eligible,
     set_fullscreen,
 )
-from utils.html_styles import join_styles, pill_badge, styled_p
+from utils.html_styles import join_styles, pill_badge
 from utils.plotly_engine import PLOTLY_CONFIG
 from utils.plotly_layout import (
     apply_density_marker_defaults,
@@ -65,43 +65,20 @@ def _render_chart_title_block(
 ) -> None:
     """Chart chrome via safe HTML fragments (no split div/markdown boundaries)."""
     tokens = get_dashboard_tokens(dashboard)
-    if role == "hero":
-        title_style = join_styles(
-            "font-size:16px",
-            "font-weight:600",
-            f"color:{tokens['text_primary']}",
-            "margin:0 0 6px 0",
-            "line-height:1.4",
-        )
-        title_class = "buip-chart-title buip-chart-title--hero"
-        if chart_id == "A-01":
-            title_class += " buip-chart-title--a01"
-    else:
-        title_style = join_styles(
-            "font-size:14px",
-            "font-weight:500",
-            f"color:{tokens['text_muted']}",
-            "margin:0 0 6px 0",
-            "line-height:1.45",
-        )
-        title_class = "buip-chart-title buip-chart-title--support"
+    title_style = join_styles(
+        "font-size:16px",
+        "font-weight:600",
+        f"color:{tokens['text_primary']}",
+        "margin:0",
+        "line-height:1.4",
+    )
+    title_class = "buip-chart-title"
+    if chart_id == "A-01":
+        title_class += " buip-chart-title--a01"
 
     parts = [
         f'<p class="{title_class}" style="{title_style}">{escape_text(title)}</p>',
     ]
-    if subtitle:
-        subtitle_bottom = "6px" if chart_id == "A-01" else "8px"
-        parts.append(
-            styled_p(
-                subtitle,
-                join_styles(
-                    f"color:{tokens['text_muted']}",
-                    "font-size:13px",
-                    f"margin:0 0 {subtitle_bottom} 0",
-                    "line-height:1.5",
-                ),
-            )
-        )
     if header_note:
         parts.append(
             pill_badge(
@@ -120,7 +97,31 @@ def _render_chart_title_block(
                 tokens["severity_warning"],
             )
         )
-    render_html_block("".join(parts))
+    render_html_block(
+        f'<div class="buip-chart-module-header" style="text-align:center;">{"".join(parts)}</div>'
+    )
+
+
+def _render_chart_footer_line(text: str, dashboard: str) -> None:
+    tokens = get_dashboard_tokens(dashboard)
+    if text == "Quadrant zones classify roads: baseline, constrained flow, capacity margin, critical overload.":
+        text = "Roads are grouped based on traffic level and road usage."
+    lowered = text.lower()
+    if "parallel coordinates" in lowered or "parcoords" in lowered:
+        text = "This profile shows how one area performs across the main traffic pressure signals."
+    footer_style = join_styles(
+        f"color:{tokens['text_muted']}",
+        "font-size:14px",
+        "font-weight:400",
+        "margin:0 0 8px 0",
+        "line-height:1.65",
+        "text-align:center",
+        "max-width:100%",
+        "overflow-wrap:anywhere",
+    )
+    render_html_block(
+        f'<p class="buip-chart-footer" style="{footer_style}">{escape_text(text)}</p>'
+    )
 
 
 def chart_container(
@@ -278,8 +279,8 @@ def chart_container(
             )
 
         if caption:
-            st.caption(caption)
+            _render_chart_footer_line(caption, dashboard)
         if record_count:
-            st.caption(record_count)
+            _render_chart_footer_line(record_count, dashboard)
 
     render_spacer(CHART_MODULE_BOTTOM)

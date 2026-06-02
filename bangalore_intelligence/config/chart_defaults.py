@@ -20,7 +20,7 @@ CHART_SIZES = {
 
 CHART_SIZE_BY_CODE: dict[str, str] = {
     "T-01": "hero_full",
-    "T-02": "pairplot",
+    "T-02": "supporting",
     "T-03": "hero_half",
     "T-04": "supporting",
     "T-05": "hero_half",
@@ -52,7 +52,7 @@ CHART_SIZE_BY_CODE: dict[str, str] = {
 }
 
 CHART_LAYOUT_TYPE_BY_CODE: dict[str, str] = {
-    "T-02": "parcoords",
+    "T-02": "default",
     "T-03": "timeseries",
     "T-01": "compact",
     "T-05": "scatter_dense",
