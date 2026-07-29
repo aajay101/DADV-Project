@@ -4,46 +4,46 @@ How raw CSVs become interactive visualisations, with every data handoff validate
 
 ```mermaid
 flowchart TB
-    subgraph Sources["📁 Data Sources"]
-        TrafficCSV[Traffic Raw CSV<br/>8,936 records · 16 roads · 8 zones]
-        AQICSV[AQI Raw CSV<br/>Daily PM2.5 · meteorological data]
+    subgraph Sources["Data Sources"]
+        TrafficCSV["Traffic Raw CSV<br>8,936 records, 16 roads, 8 zones"]
+        AQICSV["AQI Raw CSV<br>Daily PM2.5, meteorological data"]
     end
 
-    subgraph Import["🔄 Import Pipeline"]
-        CLI[import_real_data.py<br/>--dry-run / --apply]
-        Normalize[Column Normalization<br/>Alias mapping, type coercion]
-        Validate[Schema Validation<br/>Required columns, date ranges]
-        Dedup[Duplicate Detection<br/>Road-level key governance]
-        Lock[File-based Locking<br/>Mutual exclusion]
+    subgraph Import["Import Pipeline"]
+        CLI["import_real_data.py<br>--dry-run / --apply"]
+        Normalize["Column Normalization<br>Alias mapping, type coercion"]
+        Validate["Schema Validation<br>Required columns, date ranges"]
+        Dedup["Duplicate Detection<br>Road-level key governance"]
+        Lock["File-based Locking<br>Mutual exclusion"]
     end
 
-    subgraph Governance["🛡️ Governance"]
-        Backup[Atomic Backup<br/>Previous state preserved]
-        Rollback[Rollback on Failure<br/>Automatic restore]
+    subgraph Governance["Governance"]
+        Backup["Atomic Backup<br>Previous state preserved"]
+        Rollback["Rollback on Failure<br>Automatic restore"]
     end
 
-    subgraph Storage["💾 Processed Storage"]
-        Parquet[(Clean Parquets<br/>Typed, derived columns)]
-        Manifest[(Governance Manifest<br/>SHA-256 fingerprints)]
+    subgraph Storage["Processed Storage"]
+        Parquet[("Clean Parquets<br>Typed, derived columns")]
+        Manifest[("Governance Manifest<br>SHA-256 fingerprints")]
     end
 
-    subgraph Loading["📥 Cached Loading"]
-        Loader[st.cache_data<br/>with fingerprint check]
-        Fallback[Fallback Chain<br/>Processed → Canonical → Bootstrap]
+    subgraph Loading["Cached Loading"]
+        Loader["st.cache_data<br>with fingerprint check"]
+        Fallback["Fallback Chain<br>Processed -> Canonical -> Bootstrap"]
     end
 
-    subgraph Transforms["📊 Transforms"]
-        TrafficKPI[Traffic Transforms<br/>15 chart datasets + KPIs]
-        AQIKPI[AQI Transforms<br/>15 chart datasets + KPIs]
+    subgraph Transforms["Transforms"]
+        TrafficKPI["Traffic Transforms<br>15 chart datasets + KPIs"]
+        AQIKPI["AQI Transforms<br>15 chart datasets + KPIs"]
     end
 
-    subgraph Bundles["📦 Page Bundles"]
-        Bundles12[12 Bundle Builders<br/>Hero + Support charts, KPIs, Insights]
+    subgraph Bundles["Page Bundles"]
+        Bundles12["12 Bundle Builders<br>Hero + Support charts, KPIs, Insights"]
     end
 
-    subgraph Rendering["🖥️ Rendering"]
-        ChartModules[30 Chart Modules<br/>DataFrame → Plotly Figure]
-        Dashboard[Streamlit Dashboard<br/>Interactive, Filterable, Explainable]
+    subgraph Rendering["Rendering"]
+        ChartModules["30 Chart Modules<br>DataFrame -> Plotly Figure"]
+        Dashboard["Streamlit Dashboard<br>Interactive, Filterable, Explainable"]
     end
 
     TrafficCSV --> CLI
@@ -95,9 +95,9 @@ Chart modules receive clean DataFrames and return Plotly `Figure` objects. They 
 ```mermaid
 flowchart LR
     Trigger[Cache Invalidation] --> Type{Trigger Type}
-    Type -->|File hash change| Fingerprint[Fingerprint Mismatch → Revalidate]
-    Type -->|Filter change| Filter[Filter Update → Reapply filters only]
-    Type -->|Import event| Import[Import Complete → Clear dashboard caches]
+    Type -->|"File hash change"| Fingerprint["Fingerprint Mismatch -> Revalidate"]
+    Type -->|"Filter change"| Filter["Filter Update -> Reapply filters only"]
+    Type -->|"Import event"| Import["Import Complete -> Clear dashboard caches"]
     
     style Trigger fill:#E74C3C,color:#fff
     style Fingerprint fill:#E67E22,color:#fff

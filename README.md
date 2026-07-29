@@ -1,18 +1,16 @@
 <p align="center">
-  <img src="assets/banner.png" alt="Bangalore Urban Intelligence Platform" width="100%">
-</p>
-
-<h1 align="center">Bangalore Urban Intelligence Platform</h1>
-
-<p align="center">
-  <strong>Transforming raw urban data into actionable intelligence for Bangalore's traffic and air quality crises.</strong>
+  <h1 align="center">Bangalore Urban Intelligence Platform</h1>
 </p>
 
 <p align="center">
-  <a href="#project-at-a-glance">Overview</a> ·
-  <a href="#screenshots">Screenshots</a> ·
+  <strong>A dual-dashboard analytical platform that transforms raw urban data into actionable intelligence for Bangalore's traffic and air quality crises.</strong>
+</p>
+
+<p align="center">
+  <a href="#overview">Overview</a> ·
   <a href="#architecture">Architecture</a> ·
-  <a href="#getting-started">Getting Started</a>
+  <a href="#getting-started">Getting Started</a> ·
+  <a href="#license">License</a>
 </p>
 
 <p align="center">
@@ -20,29 +18,50 @@
   <img src="https://img.shields.io/badge/streamlit-1.28+-FF4B4B?style=flat-square&logo=streamlit&logoColor=white" alt="Streamlit">
   <img src="https://img.shields.io/badge/plotly-5.18+-3F4F75?style=flat-square&logo=plotly&logoColor=white" alt="Plotly">
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License: MIT">
-  <img src="https://img.shields.io/badge/tests-48-passing-brightgreen?style=flat-square" alt="Tests">
+  <img src="https://img.shields.io/badge/tests-48%20modules-brightgreen?style=flat-square" alt="48 test modules">
 </p>
 
 ---
 
-## Project at a Glance
-
-| | |
-|---|---|
-| **Problem** | Urban traffic and air quality analysis exist in disconnected systems. Bangalore's 13 million residents face both crises daily, but no tool connects them. |
-| **Solution** | A dual-dashboard analytical platform unifying traffic and AQI intelligence into 30 interactive visualisations with built-in interpretive guidance. |
-| **Users** | Urban planners, public health researchers, policy analysts, and citizens seeking evidence-based urban insights. |
-| **Scale** | 30 charts · 2 dashboards · 12 pages · 48 tests · 8 zones · 16 roads · 4 years of AQI data |
-| **Technology** | Python, Streamlit, Plotly, Pandas, Parquet |
-| **Outcome** | Transforms raw urban datasets into a navigable, explainable decision-support interface. |
-
----
-
-## The Problem
+## Overview
 
 Bangalore's traffic congestion doubles commute times across 8 zones. Its air quality regularly exceeds WHO safety thresholds. These crises are studied separately — traffic data in one tool, pollution data in another — but they are physically connected. The same roads that carry traffic generate the emissions that fill the air.
 
 **No existing tool connects these two views in a single, navigable, analyst-ready interface.**
+
+| | |
+|---|---|
+| **Solution** | A dual-dashboard platform unifying traffic and AQI intelligence into 30 interactive visualisations with built-in interpretive guidance |
+| **Users** | Urban planners, public health researchers, policy analysts, and citizens seeking evidence-based urban insights |
+| **Technology** | Python, Streamlit, Plotly, Pandas, Parquet |
+
+---
+
+## Key Features
+
+| Capability | What It Provides |
+|------------|-----------------|
+| **Dual Analytical Dashboards** | Separate traffic and AQI workflows with shared visual language |
+| **Explainability Engine** | Per-chart interpretation, misinterpretation warnings, glossary, human-impact translations |
+| **Data Governance** | Import validation, schema fingerprinting, synthetic-data detection, atomic rollback |
+| **Deterministic State Engine** | Redux-inspired reducers with typed actions and invalidation plans |
+| **Modular Component Architecture** | 28 reusable UI building blocks parameterised by dashboard identity |
+| **Interactive Visualisations** | 30 Plotly charts with hover inspection, linked selection, and fullscreen mode |
+
+<table>
+  <tr>
+    <td align="center"><strong>30</strong><br>Analytical Visualisations</td>
+    <td align="center"><strong>2</strong><br>Analytical Dashboards</td>
+    <td align="center"><strong>12</strong><br>Dashboard Pages</td>
+    <td align="center"><strong>48</strong><br>Test Modules</td>
+  </tr>
+  <tr>
+    <td align="center"><strong>8</strong><br>Bangalore Zones</td>
+    <td align="center"><strong>16</strong><br>Road Segments</td>
+    <td align="center"><strong>4</strong><br>Years of Data</td>
+    <td align="center"><strong>28</strong><br>UI Components</td>
+  </tr>
+</table>
 
 ---
 
@@ -53,42 +72,6 @@ While exploring publicly available urban datasets, I noticed that traffic and ai
 I also wanted to test whether interpretive guidance could make complex visualisations accessible to non-technical users. Most dashboards assume the viewer already knows what to look for. I wanted to explore whether pre-authored explanations — answering "what should I do with this information?" instead of "what am I looking at?" — could change how people interact with analytical data.
 
 The result is a platform that treats explainability as a first-class product concern, not a tooltip afterthought.
-
----
-
-## Solution Overview
-
-A dual-dashboard analytical platform that unifies Bangalore's traffic and air quality data into **30 interactive visualisations** across **12 analytical pages**, with built-in interpretive guidance so non-technical users can draw meaningful conclusions without training.
-
-- **Traffic Intelligence Dashboard** — 15 charts covering congestion patterns, speed thresholds, road burden, public transport relationships, and multi-dimensional area profiling
-- **Air Quality Intelligence Dashboard** — 15 charts covering PM2.5 trends, seasonal patterns, weather correlations, Atmospheric regimes, and pollution persistence
-- **Explainability Layer** — Every chart has authored interpretation guidance, misinterpretation warnings, glossary support, and human-impact translations
-- **Data Governance** — Automated validation, import locking, schema fingerprinting, and synthetic-data detection ensure data integrity at every stage
-
----
-
-## System Highlights
-
-| Capability | What It Provides |
-|------------|-----------------|
-| **Dual Analytical Dashboards** | Separate traffic and AQI workflows with shared visual language |
-| **Explainability Engine** | Per-chart interpretation, misinterpretation warnings, glossary, human-impact translations |
-| **Data Governance** | Import validation, schema fingerprinting, synthetic-data detection, atomic rollback |
-| **Deterministic State Engine** | Redux-inspired reducers with typed actions and invalidation plans |
-| **Modular Component Architecture** | 28 reusable UI building blocks parameterised by dashboard identity |
-| **Automated Testing** | 48 test modules covering governance, validators, explainability, and chart rendering |
-| **Interactive Visualisations** | 30 Plotly charts with hover inspection, linked selection, and fullscreen mode |
-
----
-
-## Technical Highlights
-
-- Deterministic reducer architecture for predictable state management
-- Fingerprint-based cache invalidation with SHA-256 schema verification
-- Atomic import pipeline with file locking and automatic rollback
-- Static explainability metadata engine with semantic style validation
-- Modular component system with dashboard-agnostic rendering
-- WCAG contrast auditing for accessibility compliance
 
 ---
 
@@ -108,85 +91,15 @@ A dual-dashboard analytical platform that unifies Bangalore's traffic and air qu
 
 ## Live Demo
 
-> **[Explore the Bangalore Urban Intelligence Platform →](https://your-app-url.streamlit.app)**
+> *Available after deployment.*
 >
-> *Deployed on Streamlit Community Cloud. No installation required.*
+> Deployed on Streamlit Community Cloud. No installation required.
 
 ---
 
 ## Screenshots
 
-<p align="center">
-  <em>Add your dashboard screenshots to the <code>assets/screenshots/</code> directory.</em>
-</p>
-
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <img src="assets/screenshots/traffic_overview.png" alt="Traffic Command Overview" width="100%">
-      <br>
-      <strong>Traffic Command Overview</strong><br>
-      <em>Identify high-volume, low-speed corridors that need capacity intervention</em>
-    </td>
-    <td align="center" width="50%">
-      <img src="assets/screenshots/aqi_overview.png" alt="AQI Crisis Overview" width="100%">
-      <br>
-      <strong>AQI Crisis Overview</strong><br>
-      <em>Assess current pollution severity and which zones exceed safe thresholds</em>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <img src="assets/screenshots/traffic_quadrant.png" alt="Road Priority Quadrant" width="100%">
-      <br>
-      <strong>Road Priority Quadrant</strong><br>
-      <em>Rank roads by congestion severity to prioritise infrastructure spend</em>
-    </td>
-    <td align="center" width="50%">
-      <img src="assets/screenshots/aqi_calendar.png" alt="AQI Calendar Heatmap" width="100%">
-      <br>
-      <strong>3-Year AQI Calendar</strong><br>
-      <em>Spot seasonal pollution peaks to plan public health advisories</em>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <img src="assets/screenshots/filter_panel.png" alt="Global Filter Panel" width="100%">
-      <br>
-      <strong>Global Filter Panel</strong><br>
-      <em>Scope any view to specific zones, date ranges, or road types</em>
-    </td>
-    <td align="center" width="50%">
-      <img src="assets/screenshots/advanced_lab.png" alt="Advanced Analytical Lab" width="100%">
-      <br>
-      <strong>Advanced Analytical Lab</strong><br>
-      <em>Cross-correlate traffic and AQI dimensions with stress profiling</em>
-    </td>
-  </tr>
-</table>
-
-### Demo GIF
-
-> *Add a 20–30 second screen recording showing: dashboard launch → filter interaction → chart exploration → explainability trigger → dashboard switching → Advanced Lab.*
-
----
-
-## Key Metrics
-
-<table>
-  <tr>
-    <td align="center"><strong>30</strong><br>Analytical Visualisations</td>
-    <td align="center"><strong>2</strong><br>Analytical Dashboards</td>
-    <td align="center"><strong>12</strong><br>Dashboard Pages</td>
-    <td align="center"><strong>48</strong><br>Automated Tests</td>
-  </tr>
-  <tr>
-    <td align="center"><strong>8</strong><br>Bangalore Zones</td>
-    <td align="center"><strong>16</strong><br>Road Segments</td>
-    <td align="center"><strong>4</strong><br>Years of Data</td>
-    <td align="center"><strong>28</strong><br>UI Components</td>
-  </tr>
-</table>
+> *Screenshots will be added after deployment.*
 
 ---
 
@@ -196,12 +109,12 @@ The platform is designed for three user personas with distinct analytical needs:
 
 ```mermaid
 graph LR
-    Open([Open Dashboard]) --> Choose[Choose Domain<br/>Traffic | AQI]
-    Choose --> KPIs[Review KPIs<br/>System health at a glance]
-    KPIs --> Filter[Apply Filters<br/>Date, area, road, weather]
-    Filter --> Investigate[Investigate Patterns<br/>Chart-by-chart exploration]
-    Investigate --> Interpret[Interpret Insights<br/>Explainability triggers]
-    Interpret --> Conclude[Draw Conclusions<br/>Evidence-based decisions]
+    Open([Open Dashboard]) --> Choose["Choose Domain<br>Traffic / AQI"]
+    Choose --> KPIs["Review KPIs<br>System health at a glance"]
+    KPIs --> Filter["Apply Filters<br>Date, area, road, weather"]
+    Filter --> Investigate["Investigate Patterns<br>Chart-by-chart exploration"]
+    Investigate --> Interpret["Interpret Insights<br>Explainability triggers"]
+    Interpret --> Conclude["Draw Conclusions<br>Evidence-based decisions"]
     
     style Open fill:#E5383B,color:#fff
     style Choose fill:#4A90D9,color:#fff
@@ -257,25 +170,25 @@ The platform follows a strict **four-layer separation** with unidirectional data
 
 ```mermaid
 graph TB
-    subgraph UI["🖥️ User Interface"]
-        User([👤 User]) --> App[Streamlit App]
-        App --> Router[Dashboard Router<br/>Traffic | AQI]
-        Router --> Pages[Page Router<br/>6 pages per dashboard]
+    subgraph UI["User Interface"]
+        User([User]) --> App[Streamlit App]
+        App --> Router["Dashboard Router<br>Traffic / AQI"]
+        Router --> Pages["Page Router<br>6 pages per dashboard"]
     end
 
-    subgraph Presentation["🎨 Presentation"]
+    subgraph Presentation["Presentation"]
         Pages --> Components[28 Reusable Components]
         Components --> Charts[30 Chart Modules]
         Components --> Explainability[Explainability Engine]
     end
 
-    subgraph State["⚙️ State Management"]
+    subgraph State["State Management"]
         App --> SessionState[Session State]
         SessionState --> Reducers[Deterministic Reducers]
         Reducers --> Performance[Cache Invalidation]
     end
 
-    subgraph Data["📊 Data Layer"]
+    subgraph Data["Data Layer"]
         Pages --> Bundles[12 Page Bundle Builders]
         Bundles --> Transforms[Data Transforms]
         Transforms --> Loaders[Cached Loaders]

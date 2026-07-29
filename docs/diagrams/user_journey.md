@@ -6,14 +6,14 @@ How three personas navigate the platform to answer real analytical questions and
 
 ```mermaid
 graph LR
-    Open([Open Dashboard]) --> Choose[Choose Domain<br/>Traffic | AQI]
-    Choose --> KPIs[Review KPIs<br/>System health at a glance]
-    KPIs --> Filter[Apply Filters<br/>Date, area, road, weather]
-    Filter --> Investigate[Investigate Patterns<br/>Chart-by-chart exploration]
-    Investigate --> Interpret[Interpret Insights<br/>Explainability triggers]
-    Interpret --> Compare[Compare Trends<br/>Cross-page analysis]
-    Compare --> Conclude[Draw Conclusions<br/>Evidence-based decisions]
-    Conclude --> Act[Support Decision<br/>Policy, planning, research]
+    Open([Open Dashboard]) --> Choose["Choose Domain<br>Traffic / AQI"]
+    Choose --> KPIs["Review KPIs<br>System health at a glance"]
+    KPIs --> Filter["Apply Filters<br>Date, area, road, weather"]
+    Filter --> Investigate["Investigate Patterns<br>Chart-by-chart exploration"]
+    Investigate --> Interpret["Interpret Insights<br>Explainability triggers"]
+    Interpret --> Compare["Compare Trends<br>Cross-page analysis"]
+    Compare --> Conclude["Draw Conclusions<br>Evidence-based decisions"]
+    Conclude --> Act["Support Decision<br>Policy, planning, research"]
     
     style Open fill:#E5383B,color:#fff
     style Choose fill:#4A90D9,color:#fff
@@ -140,7 +140,7 @@ sequenceDiagram
     A->>C: Renders A-06 Stagnation Hexbin
     C->>P: "Low wind + high viscosity = pollution trapping"
     
-    Note over P: Cross-dashboard finding: Traffic peaks and PM2.5 spikes<br/>correlate during atmospheric stagnation events
+    Note over P: Cross-dashboard finding: Traffic peaks and PM2.5 spikes correlate during atmospheric stagnation events
 ```
 
 **Key charts used:** T-01 (Traffic Overview), A-01 (AQI Overview), A-06 (Stagnation)
@@ -154,22 +154,22 @@ Each page is organized around an analytical question. The progression moves from
 
 ```mermaid
 graph TB
-    subgraph Traffic["🚗 Traffic Intelligence"]
-        T1["Command Overview<br/><em>What is the current state?</em>"]
-        T2["Temporal Intelligence<br/><em>How has it changed?</em>"]
-        T3["Spatial Operations<br/><em>Where is it worst?</em>"]
-        T4["Threshold Analytics<br/><em>What are the critical boundaries?</em>"]
-        T5["Hidden Patterns<br/><em>What is not immediately visible?</em>"]
-        T6["Advanced Lab<br/><em>How do all dimensions relate?</em>"]
+    subgraph Traffic["Traffic Intelligence"]
+        T1["Command Overview<br>What is the current state?"]
+        T2["Temporal Intelligence<br>How has it changed?"]
+        T3["Spatial Operations<br>Where is it worst?"]
+        T4["Threshold Analytics<br>What are the critical boundaries?"]
+        T5["Hidden Patterns<br>What is not immediately visible?"]
+        T6["Advanced Lab<br>How do all dimensions relate?"]
     end
 
-    subgraph AQI["🌿 Air Quality Intelligence"]
-        A1["Crisis Overview<br/><em>What is the current burden?</em>"]
-        A2["Temporal Patterns<br/><em>When does pollution peak?</em>"]
-        A3["Atmospheric Intelligence<br/><em>What conditions trap pollution?</em>"]
-        A4["Weather Relationships<br/><em>How does weather drive AQI?</em>"]
-        A5["Hidden Patterns<br/><em>What distributions reveal</em>"]
-        A6["Analytical Workspace<br/><em>Multi-variable correlation</em>"]
+    subgraph AQI["Air Quality Intelligence"]
+        A1["Crisis Overview<br>What is the current burden?"]
+        A2["Temporal Patterns<br>When does pollution peak?"]
+        A3["Atmospheric Intelligence<br>What conditions trap pollution?"]
+        A4["Weather Relationships<br>How does weather drive AQI?"]
+        A5["Hidden Patterns<br>What distributions reveal"]
+        A6["Analytical Workspace<br>Multi-variable correlation"]
     end
 
     T1 --> T2 --> T3 --> T4 --> T5 --> T6
@@ -206,8 +206,8 @@ The Lab page requires explicit entry through a gate component. Lab controls expo
 graph LR
     subgraph Filters["Global Filter Panel"]
         Date[Date Range]
-        Area[Area Selection<br/>8 zones]
-        Road[Road Selection<br/>16 roads]
+        Area["Area Selection<br>8 zones"]
+        Road["Road Selection<br>16 roads"]
         Weather[Weather Conditions]
         Season[Season]
         Category[AQI Category]
