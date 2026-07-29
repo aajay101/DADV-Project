@@ -3,5 +3,6 @@ pandas>=2.0.0
 numpy>=1.24.0
 plotly>=5.18.0
 pyarrow>=14.0.0
+reportlab>=4.0.0
 pytest>=8.0.0
 # Click events use Streamlit native on_select — streamlit-plotly-events omitted until verified for Plotly 6.x

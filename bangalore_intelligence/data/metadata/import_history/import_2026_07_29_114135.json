@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "mode": "apply",
   "success": true,
-  "import_timestamp": "2026-07-29T11:42:55Z",
+  "import_timestamp": "2026-07-29T11:41:35Z",
   "traffic": {
     "dataset": "traffic",
     "row_count": 12,
@@ -71,16 +71,16 @@
     "rows_collapsed_by_aggregation": 0,
     "rows_after": 12
   },
-  "traffic_source_path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-69\\test_loader_prefers_canonical_0\\traffic.csv",
-  "aqi_source_path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-69\\test_loader_prefers_canonical_0\\aqi.csv",
+  "traffic_source_path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-66\\test_loader_prefers_canonical_0\\traffic.csv",
+  "aqi_source_path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-66\\test_loader_prefers_canonical_0\\aqi.csv",
   "source_metadata": {
     "traffic": {
-      "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-69\\test_loader_prefers_canonical_0\\traffic.csv",
+      "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-66\\test_loader_prefers_canonical_0\\traffic.csv",
       "size_bytes": 1282,
       "sha256": "ee178fb9acdf3ad2dac861366441cbf64ad2a3448aee15931e384593083dda93"
     },
     "aqi": {
-      "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-69\\test_loader_prefers_canonical_0\\aqi.csv",
+      "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-66\\test_loader_prefers_canonical_0\\aqi.csv",
       "size_bytes": 1827,
       "sha256": "d182999cf4a4d8b3315894d578c845eb9eb6579086ff518dd6ff97721fbf9ecc"
     }
@@ -119,7 +119,7 @@
         }
       },
       "source_metadata": {
-        "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-69\\test_loader_prefers_canonical_0\\traffic.csv",
+        "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-66\\test_loader_prefers_canonical_0\\traffic.csv",
         "size_bytes": 1282,
         "sha256": "ee178fb9acdf3ad2dac861366441cbf64ad2a3448aee15931e384593083dda93"
       },
@@ -151,7 +151,7 @@
         "pm25_interpolation": "forbidden"
       },
       "source_metadata": {
-        "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-69\\test_loader_prefers_canonical_0\\aqi.csv",
+        "path": "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-66\\test_loader_prefers_canonical_0\\aqi.csv",
         "size_bytes": 1827,
         "sha256": "d182999cf4a4d8b3315894d578c845eb9eb6579086ff518dd6ff97721fbf9ecc"
       },
@@ -197,24 +197,24 @@
     }
   },
   "timings": {
-    "normalization_time": 0.0127,
-    "validation_time": 0.0124,
-    "cleaning_time": 0.0085,
-    "parquet_write_time": 0.0627,
-    "total_import_time": 0.0943
+    "normalization_time": 0.0125,
+    "validation_time": 0.0084,
+    "cleaning_time": 0.0175,
+    "parquet_write_time": 0.0655,
+    "total_import_time": 0.0889
   },
   "processed_metadata": {
     "traffic": {
       "row_count": 12,
       "derived_column_count": 4,
       "parquet_size_bytes": 13157,
-      "generated_at": "2026-07-29T11:42:55Z"
+      "generated_at": "2026-07-29T11:41:35Z"
     },
     "aqi": {
       "row_count": 32,
       "derived_column_count": 10,
       "parquet_size_bytes": 11954,
-      "generated_at": "2026-07-29T11:42:55Z"
+      "generated_at": "2026-07-29T11:41:35Z"
     }
   },
   "freshness_metadata": {
@@ -231,24 +231,24 @@
   },
   "governance": {
     "lock": {
-      "pid": 5448,
-      "started_at": "2026-07-29T11:42:55Z",
-      "started_at_unix": 1785325375.699809
+      "pid": 10728,
+      "started_at": "2026-07-29T11:41:35Z",
+      "started_at_unix": 1785325295.584952
     },
     "snapshots": {
-      "traffic_snapshot": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\archive\\traffic_raw_2026_07_29_114255.parquet",
-      "aqi_snapshot": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\archive\\aqi_raw_2026_07_29_114255.parquet",
+      "traffic_snapshot": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\archive\\traffic_raw_2026_07_29_114135.parquet",
+      "aqi_snapshot": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\archive\\aqi_raw_2026_07_29_114135.parquet",
       "traffic_snapshots_removed": [],
       "aqi_snapshots_removed": []
     },
     "profile_path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\metadata\\import_profile.json",
-    "history_path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\metadata\\import_history\\import_2026_07_29_114255.json"
+    "history_path": "C:\\Users\\aajay\\OneDrive\\Desktop\\DADV-Project\\bangalore_intelligence\\data\\metadata\\import_history\\import_2026_07_29_114135.json"
   },
   "artifacts_written": [
-    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-69\\test_loader_prefers_canonical_0\\raw\\traffic_canonical_raw.parquet",
-    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-69\\test_loader_prefers_canonical_0\\raw\\aqi_canonical_raw.parquet",
-    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-69\\test_loader_prefers_canonical_0\\processed\\traffic_clean.parquet",
-    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-69\\test_loader_prefers_canonical_0\\processed\\aqi_clean.parquet"
+    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-66\\test_loader_prefers_canonical_0\\raw\\traffic_canonical_raw.parquet",
+    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-66\\test_loader_prefers_canonical_0\\raw\\aqi_canonical_raw.parquet",
+    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-66\\test_loader_prefers_canonical_0\\processed\\traffic_clean.parquet",
+    "C:\\Users\\aajay\\AppData\\Local\\Temp\\pytest-of-aajay\\pytest-66\\test_loader_prefers_canonical_0\\processed\\aqi_clean.parquet"
   ],
   "error": ""
 }

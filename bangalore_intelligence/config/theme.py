@@ -36,7 +36,6 @@ AQI_BORDER_2 = "#162032"
 AQI_BORDER_HOVER = "#374151"
 AQI_NAVY = "#1E3A5F"
 AQI_CYAN = "#38BDF8"
-AQI_STEEL = "#64748B"
 AQI_MUTED_GREEN = "#34D399"
 AQI_TEXT_PRIMARY = "#E5E7EB"
 AQI_TEXT_MUTED = "#6B7280"
@@ -49,15 +48,6 @@ AQI_COLOR_POOR = "#B07A45"
 AQI_COLOR_VERY_POOR = "#A85A5A"
 AQI_COLOR_SEVERE = "#6E5A82"
 
-AQI_SCALE_COLORS = [
-    AQI_COLOR_GOOD,
-    AQI_COLOR_SATISFACTORY,
-    AQI_COLOR_MODERATE,
-    AQI_COLOR_POOR,
-    AQI_COLOR_VERY_POOR,
-    AQI_COLOR_SEVERE,
-]
-
 # ── Shared typography families ───────────────────────────────────────────────
 FONT_FAMILY = "'Inter', 'Segoe UI', sans-serif"
 FONT_MONO = "'JetBrains Mono', 'Fira Code', monospace"
@@ -68,25 +58,14 @@ SPACING_SM = 8
 SPACING_MD = 16
 SPACING_LG = 24
 SPACING_XL = 40
-SPACING_2XL = 64
 
-GAP_TIGHT = SPACING_SM
-GAP_DEFAULT = SPACING_MD
-GAP_SECTION = SPACING_LG
 GAP_ZONE = SPACING_XL
 GAP_PAGE_SECTION = 32
 
 # ── Border radius scale ──────────────────────────────────────────────────────
-RADIUS_SM = 4
 RADIUS_MD = 6
 RADIUS_LG = 8
 RADIUS_XL = 12
-RADIUS_XL = 12
-
-# ── Elevation (dark theme: borders + surface lift, no box-shadow) ────────────
-ELEVATION_0 = "none"
-ELEVATION_1 = f"1px solid {TRAFFIC_BORDER_1}"
-ELEVATION_2 = f"1px solid {TRAFFIC_BORDER_HOVER}"
 
 # ── Severity semantic palette ──────────────────────────────────────────────────
 SEVERITY_CRITICAL = "critical"

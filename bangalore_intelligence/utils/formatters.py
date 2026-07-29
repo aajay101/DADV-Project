@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from datetime import datetime
 from typing import Any
 
 import pandas as pd
@@ -326,6 +327,11 @@ def hover_template(*lines: str, extra: bool = True) -> str:
     """Join hover lines and append Plotly's empty trace name suppression."""
     body = "<br>".join(lines)
     return f"{body}<extra></extra>" if extra else body
+
+
+def fmt_export_timestamp() -> str:
+    """Return a formatted timestamp for export footers."""
+    return datetime.now().strftime("%Y-%m-%d %H:%M")
 
 
 def fmt_filter_summary(filters: Mapping[str, Any], dashboard: str = "traffic") -> str:

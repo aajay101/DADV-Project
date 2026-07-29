@@ -1,6 +1,7 @@
 # Python cache
 __pycache__/
 *.pyc
+.pytest_cache/
 
 # Virtual environments
 .venv/
@@ -13,12 +14,13 @@ env/
 # Streamlit secrets
 .streamlit/secrets.toml
 
+# IDE
+.vscode/
+.idea/
+
 # OS junk
 .DS_Store
 Thumbs.db
-
-# VS Code
-.vscode/
 
 # Data artifacts
 data/processed/

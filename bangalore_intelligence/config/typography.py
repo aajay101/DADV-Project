@@ -67,15 +67,6 @@ TYPE_BODY = {
     "transform": "none",
 }
 
-TYPE_MUTED = {
-    "family": FONT_FAMILY,
-    "size": "14px",
-    "weight": "400",
-    "letter_spacing": "0",
-    "line_height": "1.65",
-    "transform": "none",
-}
-
 TYPE_CAPTION = {
     "family": FONT_FAMILY,
     "size": "13px",
