@@ -89,18 +89,15 @@ The result is a platform that treats explainability as a first-class product con
 
 ---
 
-## Live Demo
+## 🚀 Live Demo
 
-> *Available after deployment.*
->
-> Deployed on Streamlit Community Cloud. No installation required.
+**Try the application here:**
+
+🔗 **https://bangalore-urban-intelligence-platform-use6tohayztslksm6dkrro.streamlit.app**
+
+No installation required. The application is deployed on Streamlit Community Cloud and is fully interactive.
 
 ---
-
-## Screenshots
-
-> *Screenshots will be added after deployment.*
-
 ---
 
 ## User Journey
